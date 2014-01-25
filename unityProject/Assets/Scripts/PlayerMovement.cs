@@ -5,6 +5,7 @@ using System;
 
 public class PlayerMovement : MonoBehaviour
 {
+	public GamePad.Index whichController = GamePad.Index.One;
 	private Transform myTransform;
 
 	Vector2 mPos;
@@ -14,6 +15,36 @@ public class PlayerMovement : MonoBehaviour
 	const float maxRunSpeed = 30;
 	const float groundLevel = -3;
 	Vector3 startScale;
+
+	class Thought
+	{
+		public bool jump;
+		public float run;
+		public float duck; // [0, 1] -- how much you are ducking (0 is not ducking at all)
+	}
+
+	abstract class Brain
+	{
+		public abstract Thought Think();
+	}
+
+	class PlayerBrain : Brain
+	{
+		public GamePad.Index whichController = GamePad.Index.One;
+		public override Thought Think()
+		{
+			Thought thought = new Thought();
+			GamepadState state = GamePad.GetState(whichController);
+			thought.duck = state.LeftStickAxis.y < -0.1f
+				? -state.LeftStickAxis.y
+				: 0;
+			thought.jump = state.A;
+			thought.run = Math.Min(Math.Max(state.LeftStickAxis.x + state.dPadAxis.x, -1.0f), 1.0f);
+			return thought;
+		}
+	}
+
+	Brain brain = new PlayerBrain();
 
 	// Use this for initialization
 	void Start()
@@ -36,11 +67,13 @@ public class PlayerMovement : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		float duckAmount = Duck();
-		Run();
+		Thought thought = brain.Think();
+
+		float duckAmount = Duck(thought);
+		Run(thought);
 		if (OnGround())
 		{
-			Jump();
+			Jump(thought);
 		}
 
 		// apply gravity
@@ -56,41 +89,27 @@ public class PlayerMovement : MonoBehaviour
 		}
 	}
 
-	float Duck()
+	float Duck(Thought thought)
 	{
-		GamepadState state = GamePad.GetState(GamePad.Index.One);
-		float duckAmount = 0;
-		if (state.LeftStickAxis.y < -0.1f)
-		{
-			duckAmount = -state.LeftStickAxis.y;
-		}
-		myTransform.localScale = new Vector3(startScale.x * (1.0f + duckAmount), startScale.y * (1.0f - duckAmount/2), startScale.z);
-		return duckAmount;
+		myTransform.localScale = new Vector3(startScale.x * (1.0f + thought.duck), startScale.y * (1.0f - thought.duck/2), startScale.z);
+		return thought.duck;
 	}
-	void Jump()
-	{
-		GamepadState state = GamePad.GetState(GamePad.Index.One);
-		mVel = new Vector2(mVel.x, state.A ? jumpSpeed : mVel.y);
-	}
-	void Run()
-	{
-		GamepadState state = GamePad.GetState(GamePad.Index.One);
 
-		float currVelX = Math.Min(Math.Max(state.LeftStickAxis.x + state.dPadAxis.x, -1.0f), 1.0f);
+	void Jump(Thought thought)
+	{
+		mVel = new Vector2(mVel.x, thought.jump ? jumpSpeed : mVel.y);
+	}
+
+	void Run(Thought thought)
+	{
+		float currVelX = thought.run;
 		if (Math.Abs(currVelX) > 0.1f)
 		{
 			mVel = new Vector2(currVelX * maxRunSpeed, mVel.y);
 		}
 		else
 		{
-			if (state.X)
-			{
-				mVel += new Vector2(Time.deltaTime * maxRunSpeed, 0);
-			} 
-			else
-			{
-				mVel = new Vector2(mVel.x * 0.1f, mVel.y);
-			}
+			mVel = new Vector2(mVel.x * 0.1f, mVel.y);
 		}
 		myTransform.eulerAngles = new Vector3(0, 0, -mVel.x/3);
 	}
