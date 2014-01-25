@@ -5,7 +5,16 @@ using System;
 
 public class PlayerMovement : MonoBehaviour
 {
-	public GamePad.Index whichController = GamePad.Index.One;
+	public enum BrainType
+	{
+		Player1,
+		Player2,
+		Player3,
+		Player4,
+		AI
+	}
+	public BrainType brainType = BrainType.Player1;
+
 	private Transform myTransform;
 
 	Vector2 mPos;
@@ -30,7 +39,11 @@ public class PlayerMovement : MonoBehaviour
 
 	class PlayerBrain : Brain
 	{
-		public GamePad.Index whichController = GamePad.Index.One;
+		public GamePad.Index whichController; // = GamePad.Index.One;
+		public PlayerBrain(GamePad.Index controllerIdx)
+		{
+			whichController = controllerIdx;
+		}
 		public override Thought Think()
 		{
 			Thought thought = new Thought();
@@ -44,14 +57,40 @@ public class PlayerMovement : MonoBehaviour
 		}
 	}
 
-	Brain brain = new PlayerBrain();
+	class AIBrain : Brain
+	{
+		public override Thought Think()
+		{
+			Thought thought = new Thought();
+			thought.duck = 0;
+			thought.jump = true;
+			thought.run = 0.25f;
+			return thought;
+		}
+	}
+
+	Brain brain;
+
+	Brain CreateBrain()
+	{
+		switch (brainType)
+		{
+		case BrainType.Player1: return new PlayerBrain(GamePad.Index.One);
+		case BrainType.Player2: return new PlayerBrain(GamePad.Index.Two);
+		case BrainType.Player3: return new PlayerBrain(GamePad.Index.Three);
+		case BrainType.Player4: return new PlayerBrain(GamePad.Index.Four);
+		case BrainType.AI:      return new AIBrain();
+		default:                return null;
+		}
+	}
 
 	// Use this for initialization
 	void Start()
 	{
+		brain = CreateBrain();
 		mVel = new Vector2(0, 0);
 		myTransform = transform;
-		mPos = new Vector2(-10, -3);
+		mPos = new Vector2(myTransform.position.x, myTransform.position.y);
 		startScale = new Vector3(myTransform.localScale.x, myTransform.localScale.y, myTransform.localScale.z);
 	}
 
