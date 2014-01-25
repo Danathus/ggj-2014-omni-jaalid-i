@@ -18,7 +18,6 @@ public class PlayerMovement : MonoBehaviour
 	private Transform myTransform;
 
 	Vector2 mPos;
-	Vector2 mVel;
 	const float jumpSpeed = 50.0f;
 	const float maxRunSpeed = 30;
 	Vector3 startScale;
@@ -86,7 +85,6 @@ public class PlayerMovement : MonoBehaviour
 	void Start()
 	{
 		brain = CreateBrain();
-		mVel = new Vector2(0, 0);
 		myTransform = transform;
 		mPos = new Vector2(myTransform.position.x, myTransform.position.y);
 		startScale = new Vector3(myTransform.localScale.x, myTransform.localScale.y, myTransform.localScale.z);
@@ -105,7 +103,6 @@ public class PlayerMovement : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		//Debug.Log(rigidbody2d
 		Thought thought = brain.Think();
 
 		float duckAmount = Duck(thought);
@@ -113,14 +110,6 @@ public class PlayerMovement : MonoBehaviour
 		if (OnGround())
 		{
 			Jump(thought);
-		}
-
-		mPos += mVel * Time.deltaTime;
-
-		myTransform.position = new Vector2(mPos.x, myTransform.position.y);
-		if (OnGround())
-		{
-			mVel = new Vector2(mVel.x, 0);
 		}
 	}
 
@@ -136,7 +125,6 @@ public class PlayerMovement : MonoBehaviour
 
 	void Jump(Thought thought)
 	{
-		mVel = new Vector2(mVel.x, thought.jump ? jumpSpeed : mVel.y);
 		if (thought.jump)
 		{
 			Rigidbody2D rbody = GetComponent<Rigidbody2D>();
@@ -147,16 +135,18 @@ public class PlayerMovement : MonoBehaviour
 
 	void Run(Thought thought)
 	{
+		Rigidbody2D rbody = GetComponent<Rigidbody2D>();
+
 		float currVelX = thought.run;
 		if (Math.Abs(currVelX) > 0.1f)
 		{
-			mVel = new Vector2(currVelX * maxRunSpeed, mVel.y);
+			rbody.velocity = new Vector2(currVelX * maxRunSpeed, rbody.velocity.y);
 		}
 		else
 		{
-			mVel = new Vector2(mVel.x * 0.1f, mVel.y);
+			rbody.velocity = new Vector2(rbody.velocity.x * 0.1f, rbody.velocity.y);
 		}
-		myTransform.eulerAngles = new Vector3(0, 0, -mVel.x/3);
+		myTransform.eulerAngles = new Vector3(0, 0, -rbody.velocity.x/3);
 	}
 
 	//#if IGNORE
