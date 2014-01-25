@@ -1,83 +1,97 @@
 ﻿using UnityEngine;
 using System.Collections;
 using GamepadInput;
+using System;
 
 public class PlayerMovement : MonoBehaviour
 {
 	private Transform myTransform;
-	const float jumpSpeed = 10.0f;
-	const float gravity = 3.0f;
-	float runSpeed = 0.0f;
+
+	Vector2 mPos;
+	Vector2 mVel;
+	const float jumpSpeed = 50.0f;
+	const float gravity = 200.0f;
+	const float maxRunSpeed = 30;
+	const float groundLevel = -3;
+	Vector3 startScale;
 
 	// Use this for initialization
 	void Start()
 	{
+		mVel = new Vector2(0, 0);
 		myTransform = transform;
-		myTransform.position = new Vector2 (-10, -3);
+		mPos = new Vector2(-10, -3);
+		startScale = new Vector3(myTransform.localScale.x, myTransform.localScale.y, myTransform.localScale.z);
 	}
-	
+
+	float Height()
+	{
+		return myTransform.localScale.y;
+	}
+	bool OnGround()
+	{
+		return mPos.y - Height()/2 == groundLevel;
+	}
+
 	// Update is called once per frame
 	void Update()
 	{
-		Running ();
-
-		Jump();
-
-		if (myTransform.position.y > -3) 
+		float duckAmount = Duck();
+		Run();
+		if (OnGround())
 		{
-			myTransform.Translate(Vector3.down * gravity * Time.deltaTime);
+			Jump();
 		}
-		if (Input.GetKey ("space")) {
-			runSpeed += 0.5f;
-		} 
-		else if(runSpeed > 0.0f){
-			runSpeed -= 0.5f;
+
+		// apply gravity
+		mVel = new Vector2(mVel.x, mVel.y - gravity*(1+duckAmount) * Time.deltaTime);
+		mPos += mVel * Time.deltaTime;
+
+		// clamp vertical position
+		mPos = new Vector2(mPos.x, System.Math.Max(mPos.y - Height()/2, groundLevel) + Height()/2);
+		myTransform.position = mPos;
+		if (OnGround())
+		{
+			mVel = new Vector2(mVel.x, 0);
 		}
 	}
 
+	float Duck()
+	{
+		GamepadState state = GamePad.GetState(GamePad.Index.One);
+		float duckAmount = 0;
+		if (state.LeftStickAxis.y < -0.1f)
+		{
+			duckAmount = -state.LeftStickAxis.y;
+		}
+		myTransform.localScale = new Vector3(startScale.x * (1.0f + duckAmount), startScale.y * (1.0f - duckAmount/2), startScale.z);
+		return duckAmount;
+	}
 	void Jump()
 	{
-	#if IGNORE
-		bool aHeld = Input.GetKeyDown("joystick 1 button 0");
-		bool bHeld = Input.GetKeyDown("joystick 1 button 1");
-		bool xHeld = Input.GetKeyDown("joystick 1 button 2");
-		bool yHeld = Input.GetKeyDown("joystick 1 button 3");
-
-		bool LBHeld = Input.GetKeyDown("joystick 1 button 4");
-		bool RBHeld = Input.GetKeyDown("joystick 1 button 5");
-		bool backHeld = Input.GetKeyDown("joystick 1 button 6");
-		bool startHeld = Input.GetKeyDown("joystick 1 button 7");
-
-		bool dpLHeld = Input.GetKeyDown("joystick 1 button 8"); // ?
-		bool dpRHeld = Input.GetKeyDown("joystick 1 button 9"); // ?
-
-		float dPadH = Input.GetAxis("RightStickHorizontal");
-		//Debug.Log(Input.GetAxis("Left Trigger"));
-		//Debug.Log(Input.GetAxis("Left Trigger"));
-		//Debug.Log(Input.GetAxis("DPad Horizontal"));
-		//Debug.Log(Input.GetAxis("DPad Vertical"));
-		//Debug.Log(Input.GetAxis("Right Trigger")); // doesn't work
-		//Debug.Log(Input.GetAxis("RightStickHorizontal"));
-		//Debug.Log(Input.GetAxis("RightStickVertical"));
-	#else
 		GamepadState state = GamePad.GetState(GamePad.Index.One);
-		bool yHeld = state.Y;
-		bool dpLHeld = state.dPadAxis.x < -0.1f;
-		bool dpRHeld = state.dPadAxis.x >  0.1f;
-		float dPadH = state.dPadAxis.x;
-	#endif
+		mVel = new Vector2(mVel.x, state.A ? jumpSpeed : mVel.y);
+	}
+	void Run()
+	{
+		GamepadState state = GamePad.GetState(GamePad.Index.One);
 
-		float jumpDir = 0; //Input.GetAxis("Vertical");
-		if (yHeld)
+		float currVelX = Math.Min(Math.Max(state.LeftStickAxis.x + state.dPadAxis.x, -1.0f), 1.0f);
+		if (Math.Abs(currVelX) > 0.1f)
 		{
-			jumpDir = 1;
+			mVel = new Vector2(currVelX * maxRunSpeed, mVel.y);
 		}
-		float walkDir = dPadH;
-		myTransform.Translate(Vector3.up * jumpDir * jumpSpeed * Time.deltaTime);
-		myTransform.Translate(Vector3.right * walkDir * jumpSpeed * Time.deltaTime);
+		else
+		{
+			if (state.X)
+			{
+				mVel += new Vector2(Time.deltaTime * maxRunSpeed, 0);
+			} 
+			else
+			{
+				mVel = new Vector2(mVel.x * 0.1f, mVel.y);
+			}
+		}
+		myTransform.eulerAngles = new Vector3(0, 0, -mVel.x/3);
 	}
-	void Running() {
-		myTransform.Translate(Vector3.right * runSpeed * Time.deltaTime);
-	}
-
 }
