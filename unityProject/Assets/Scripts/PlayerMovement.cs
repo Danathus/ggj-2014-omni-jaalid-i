@@ -5,6 +5,7 @@ using System;
 
 public class PlayerMovement : MonoBehaviour
 {
+	public GamePad.Index whichController = GamePad.Index.One;
 	private Transform myTransform;
 
 	Vector2 mPos;
@@ -14,6 +15,25 @@ public class PlayerMovement : MonoBehaviour
 	const float maxRunSpeed = 30;
 	const float groundLevel = -3;
 	Vector3 startScale;
+
+	class Thought
+	{
+		public bool jump;
+		public float run;
+		public float duck; // [0, 1] -- how much you are ducking (0 is not ducking at all)
+	}
+
+	Thought Think()
+	{
+		Thought thought = new Thought();
+		GamepadState state = GamePad.GetState(whichController);
+		thought.duck = state.LeftStickAxis.y < -0.1f
+			? -state.LeftStickAxis.y
+			: 0;
+		thought.jump = state.A;
+		thought.run = Math.Min(Math.Max(state.LeftStickAxis.x + state.dPadAxis.x, -1.0f), 1.0f);
+		return thought;
+	}
 
 	// Use this for initialization
 	void Start()
@@ -36,11 +56,14 @@ public class PlayerMovement : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		float duckAmount = Duck();
-		Run();
+		GamepadState state = GamePad.GetState(whichController);
+		Thought thought = Think();
+
+		float duckAmount = Duck(state);
+		Run(state);
 		if (OnGround())
 		{
-			Jump();
+			Jump(state);
 		}
 
 		// apply gravity
@@ -56,9 +79,8 @@ public class PlayerMovement : MonoBehaviour
 		}
 	}
 
-	float Duck()
+	float Duck(GamepadState state)
 	{
-		GamepadState state = GamePad.GetState(GamePad.Index.One);
 		float duckAmount = 0;
 		if (state.LeftStickAxis.y < -0.1f)
 		{
@@ -67,15 +89,14 @@ public class PlayerMovement : MonoBehaviour
 		myTransform.localScale = new Vector3(startScale.x * (1.0f + duckAmount), startScale.y * (1.0f - duckAmount/2), startScale.z);
 		return duckAmount;
 	}
-	void Jump()
+
+	void Jump(GamepadState state)
 	{
-		GamepadState state = GamePad.GetState(GamePad.Index.One);
 		mVel = new Vector2(mVel.x, state.A ? jumpSpeed : mVel.y);
 	}
-	void Run()
-	{
-		GamepadState state = GamePad.GetState(GamePad.Index.One);
 
+	void Run(GamepadState state)
+	{
 		float currVelX = Math.Min(Math.Max(state.LeftStickAxis.x + state.dPadAxis.x, -1.0f), 1.0f);
 		if (Math.Abs(currVelX) > 0.1f)
 		{
