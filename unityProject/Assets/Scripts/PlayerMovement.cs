@@ -20,7 +20,6 @@ public class PlayerMovement : MonoBehaviour
 	Vector2 mPos;
 	Vector2 mVel;
 	const float jumpSpeed = 50.0f;
-	const float gravity = 200.0f;
 	const float maxRunSpeed = 30;
 	Vector3 startScale;
 
@@ -116,8 +115,6 @@ public class PlayerMovement : MonoBehaviour
 			Jump(thought);
 		}
 
-		// apply gravity
-		mVel = new Vector2(mVel.x, mVel.y - gravity*(1+duckAmount) * Time.deltaTime);
 		mPos += mVel * Time.deltaTime;
 
 		myTransform.position = new Vector2(mPos.x, myTransform.position.y);
@@ -130,6 +127,10 @@ public class PlayerMovement : MonoBehaviour
 	float Duck(Thought thought)
 	{
 		myTransform.localScale = new Vector3(startScale.x * (1.0f + thought.duck), startScale.y * (1.0f - thought.duck/2), startScale.z);
+
+		Rigidbody2D rbody = GetComponent<Rigidbody2D>();
+		rbody.velocity = new Vector2(rbody.velocity.x, rbody.velocity.y + Physics2D.gravity.y*thought.duck);
+
 		return thought.duck;
 	}
 
