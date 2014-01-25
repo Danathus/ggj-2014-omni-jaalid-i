@@ -56,14 +56,13 @@ public class PlayerMovement : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		GamepadState state = GamePad.GetState(whichController);
 		Thought thought = Think();
 
-		float duckAmount = Duck(state);
-		Run(state);
+		float duckAmount = Duck(thought);
+		Run(thought);
 		if (OnGround())
 		{
-			Jump(state);
+			Jump(thought);
 		}
 
 		// apply gravity
@@ -79,39 +78,27 @@ public class PlayerMovement : MonoBehaviour
 		}
 	}
 
-	float Duck(GamepadState state)
+	float Duck(Thought thought)
 	{
-		float duckAmount = 0;
-		if (state.LeftStickAxis.y < -0.1f)
-		{
-			duckAmount = -state.LeftStickAxis.y;
-		}
-		myTransform.localScale = new Vector3(startScale.x * (1.0f + duckAmount), startScale.y * (1.0f - duckAmount/2), startScale.z);
-		return duckAmount;
+		myTransform.localScale = new Vector3(startScale.x * (1.0f + thought.duck), startScale.y * (1.0f - thought.duck/2), startScale.z);
+		return thought.duck;
 	}
 
-	void Jump(GamepadState state)
+	void Jump(Thought thought)
 	{
-		mVel = new Vector2(mVel.x, state.A ? jumpSpeed : mVel.y);
+		mVel = new Vector2(mVel.x, thought.jump ? jumpSpeed : mVel.y);
 	}
 
-	void Run(GamepadState state)
+	void Run(Thought thought)
 	{
-		float currVelX = Math.Min(Math.Max(state.LeftStickAxis.x + state.dPadAxis.x, -1.0f), 1.0f);
+		float currVelX = thought.run;
 		if (Math.Abs(currVelX) > 0.1f)
 		{
 			mVel = new Vector2(currVelX * maxRunSpeed, mVel.y);
 		}
 		else
 		{
-			if (state.X)
-			{
-				mVel += new Vector2(Time.deltaTime * maxRunSpeed, 0);
-			} 
-			else
-			{
-				mVel = new Vector2(mVel.x * 0.1f, mVel.y);
-			}
+			mVel = new Vector2(mVel.x * 0.1f, mVel.y);
 		}
 		myTransform.eulerAngles = new Vector3(0, 0, -mVel.x/3);
 	}
