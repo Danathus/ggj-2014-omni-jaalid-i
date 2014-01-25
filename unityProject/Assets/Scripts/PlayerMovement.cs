@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using GamepadInput;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -27,6 +28,7 @@ public class PlayerMovement : MonoBehaviour
 
 	void Jump()
 	{
+	#if IGNORE
 		bool aHeld = Input.GetKeyDown("joystick 1 button 0");
 		bool bHeld = Input.GetKeyDown("joystick 1 button 1");
 		bool xHeld = Input.GetKeyDown("joystick 1 button 2");
@@ -48,14 +50,21 @@ public class PlayerMovement : MonoBehaviour
 		//Debug.Log(Input.GetAxis("Right Trigger")); // doesn't work
 		//Debug.Log(Input.GetAxis("RightStickHorizontal"));
 		//Debug.Log(Input.GetAxis("RightStickVertical"));
+	#else
+		GamepadState state = GamePad.GetState(GamePad.Index.One);
+		bool yHeld = state.Y;
+		bool dpLHeld = state.dPadAxis.x < -0.1f;
+		bool dpRHeld = state.dPadAxis.x >  0.1f;
+		float dPadH = state.dPadAxis.x;
+	#endif
 
-		float jumpDir = Input.GetAxis("Vertical");
+		float jumpDir = 0; //Input.GetAxis("Vertical");
 		if (yHeld)
 		{
 			jumpDir = 1;
 		}
-		float walkDir = (dpLHeld ? -1 : 0) + (dpRHeld ? +1 : 0) + dPadH;
-		myTransform.Translate(Vector3.up * jumpDir * jumpSpeed * 0.5f);
-		myTransform.Translate(Vector3.right * walkDir * jumpSpeed * 0.5f);
+		float walkDir = dPadH;
+		myTransform.Translate(Vector3.up * jumpDir * jumpSpeed * Time.deltaTime);
+		myTransform.Translate(Vector3.right * walkDir * jumpSpeed * Time.deltaTime);
 	}
 }
