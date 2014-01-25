@@ -23,17 +23,28 @@ public class PlayerMovement : MonoBehaviour
 		public float duck; // [0, 1] -- how much you are ducking (0 is not ducking at all)
 	}
 
-	Thought Think()
+	abstract class Brain
 	{
-		Thought thought = new Thought();
-		GamepadState state = GamePad.GetState(whichController);
-		thought.duck = state.LeftStickAxis.y < -0.1f
-			? -state.LeftStickAxis.y
-			: 0;
-		thought.jump = state.A;
-		thought.run = Math.Min(Math.Max(state.LeftStickAxis.x + state.dPadAxis.x, -1.0f), 1.0f);
-		return thought;
+		public abstract Thought Think();
 	}
+
+	class PlayerBrain : Brain
+	{
+		public GamePad.Index whichController = GamePad.Index.One;
+		public override Thought Think()
+		{
+			Thought thought = new Thought();
+			GamepadState state = GamePad.GetState(whichController);
+			thought.duck = state.LeftStickAxis.y < -0.1f
+				? -state.LeftStickAxis.y
+				: 0;
+			thought.jump = state.A;
+			thought.run = Math.Min(Math.Max(state.LeftStickAxis.x + state.dPadAxis.x, -1.0f), 1.0f);
+			return thought;
+		}
+	}
+
+	Brain brain = new PlayerBrain();
 
 	// Use this for initialization
 	void Start()
@@ -56,7 +67,7 @@ public class PlayerMovement : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		Thought thought = Think();
+		Thought thought = brain.Think();
 
 		float duckAmount = Duck(thought);
 		Run(thought);
