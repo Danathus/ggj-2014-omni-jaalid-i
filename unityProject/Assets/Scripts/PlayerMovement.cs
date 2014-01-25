@@ -22,7 +22,6 @@ public class PlayerMovement : MonoBehaviour
 	const float jumpSpeed = 50.0f;
 	const float gravity = 200.0f;
 	const float maxRunSpeed = 30;
-	const float groundLevel = -3;
 	Vector3 startScale;
 
 	class Thought
@@ -98,14 +97,16 @@ public class PlayerMovement : MonoBehaviour
 	{
 		return myTransform.localScale.y;
 	}
+	private bool onGround = false;
 	bool OnGround()
 	{
-		return mPos.y - Height()/2 == groundLevel;
+		return onGround;
 	}
 
 	// Update is called once per frame
 	void Update()
 	{
+		//Debug.Log(rigidbody2d
 		Thought thought = brain.Think();
 
 		float duckAmount = Duck(thought);
@@ -119,9 +120,7 @@ public class PlayerMovement : MonoBehaviour
 		mVel = new Vector2(mVel.x, mVel.y - gravity*(1+duckAmount) * Time.deltaTime);
 		mPos += mVel * Time.deltaTime;
 
-		// clamp vertical position
-		mPos = new Vector2(mPos.x, System.Math.Max(mPos.y - Height()/2, groundLevel) + Height()/2);
-		myTransform.position = mPos;
+		myTransform.position = new Vector2(mPos.x, myTransform.position.y);
 		if (OnGround())
 		{
 			mVel = new Vector2(mVel.x, 0);
@@ -137,6 +136,12 @@ public class PlayerMovement : MonoBehaviour
 	void Jump(Thought thought)
 	{
 		mVel = new Vector2(mVel.x, thought.jump ? jumpSpeed : mVel.y);
+		if (thought.jump)
+		{
+			Rigidbody2D rbody = GetComponent<Rigidbody2D>();
+			rbody.velocity = new Vector2(rbody.velocity.x, jumpSpeed);
+		}
+		onGround = false;
 	}
 
 	void Run(Thought thought)
@@ -152,4 +157,22 @@ public class PlayerMovement : MonoBehaviour
 		}
 		myTransform.eulerAngles = new Vector3(0, 0, -mVel.x/3);
 	}
+
+	//#if IGNORE
+	void OnCollisionEnter2D(Collision2D collision)
+	{
+		/*
+		float minDist = 2;
+		mPos = (mPos - new Vector2(collision.transform.position.x, collision.transform.position.y)).normalized * minDist;
+        foreach (ContactPoint2D contact in collision.contacts)
+		{
+            Debug.DrawRay(contact.point, contact.normal, Color.green);
+        }
+		//*/
+		if (collision.gameObject.name == "Big Flat Ground")
+		{
+			onGround = true;
+		}
+    }
+	//#endif
 }
