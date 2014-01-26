@@ -6,7 +6,6 @@ using CBX.TileMapping.Unity;
 
 public class PlayerMovement : MonoBehaviour
 {
-
 	public enum BrainType
 	{
 		Player1,
@@ -29,12 +28,17 @@ public class PlayerMovement : MonoBehaviour
 		public float run;
 		public float duck; // [0, 1] -- how much you are ducking (0 is not ducking at all)
 		public int talk; // the index of the image want to show, 0 nothing to talk
+		public Thought(bool jump, float run, float duck, int talk)
+		{
+			this.jump = jump;
+			this.run = run;
+			this.duck = duck;
+			this.talk = talk;
+		}
+		public Thought() : this(false, 0, 0, 0) {}
 		public bool thoughtless()
 		{
-			if (!jump && (run < 0.2) && (duck < 0.1f))
-				return true;
-			else
-				return false;
+			return !jump && (run < 0.2) && (duck < 0.1f);
 		}
 	}
 
@@ -142,7 +146,7 @@ public class PlayerMovement : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		Thought thought = brain.Think();
+		Thought thought = IsStunned() ? new Thought(false, -1.0f, 0.0f, 0) : brain.Think();
 
 		Duck(thought);
 		Run(thought);
@@ -150,16 +154,30 @@ public class PlayerMovement : MonoBehaviour
 		{
 			Jump(thought);
 		}
-		Talk (thought);
-		if (thought.thoughtless ()) 
+		Talk(thought);
+		if (thought.thoughtless()) 
 		{
 			if (standSprite) 
 			{
 				SpriteRenderer sprRenderer = GetComponent<SpriteRenderer>();
-				
-				sprRenderer.sprite = standSprite; 	
+
+				if (IsStunned())
+				{
+					sprRenderer.sprite = (int)(mStunCountdown * 10) % 2 == 0 ? standSprite : null;
+				}
+				else
+				{
+					sprRenderer.sprite = standSprite;
+				}
 			}
 		}
+		UpdateStunEffect();
+#if STUN_TEST
+		if (brainType == BrainType.Player1 && GamePad.GetState(GamePad.Index.One).Y)
+		{
+			Stun();
+		}
+#endif
 	}
 
 	float Duck(Thought thought)
@@ -182,7 +200,7 @@ public class PlayerMovement : MonoBehaviour
 	{
 		if (thought.jump)
 		{
-			if(jumpSprite)
+			if (jumpSprite)
 			{
 				SpriteRenderer sprRenderer = GetComponent<SpriteRenderer>();
 				sprRenderer.sprite = jumpSprite;  
@@ -227,23 +245,30 @@ public class PlayerMovement : MonoBehaviour
 			talkBubble.transform.position = new Vector2 (gameObject.transform.position.x, gameObject.transform.position.y + 20);
 		}
 	}
-
-	//#if IGNORE
+	
 	void OnCollisionEnter2D(Collision2D collision)
 	{
-		/*
-		float minDist = 2;
-		mPos = (mPos - new Vector2(collision.transform.position.x, collision.transform.position.y)).normalized * minDist;
-        foreach (ContactPoint2D contact in collision.contacts)
-		{
-            Debug.DrawRay(contact.point, contact.normal, Color.green);
-        }
-		//*/
 		if (collision.gameObject.name == "tile")
 		{
 			onGround = true;
 		}
     }
-	//#endif
 
+	float mStunCountdown = 0;
+	const float kStunDuation = 1.0f;
+	void Stun()
+	{
+		if (!IsStunned())
+		{
+			mStunCountdown = kStunDuation;
+		}
+	}
+	bool IsStunned()
+	{
+		return mStunCountdown > 0;
+	}
+	void UpdateStunEffect()
+	{
+		mStunCountdown = Mathf.Max(mStunCountdown - Time.deltaTime, 0);
+	}
 }
