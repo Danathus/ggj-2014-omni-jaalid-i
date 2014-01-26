@@ -233,7 +233,7 @@ Animator:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 956109648}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: d56f720d6a6bc6f4f9b531d6faee2c2b, type: 2}
   m_CullingMode: 0
@@ -354,7 +354,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0e66ea13ddbe804580d70d8480e22a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 0}
+  camera: {fileID: 1651639378}
 --- !u!4 &981577040
 Transform:
   m_ObjectHideFlags: 0
@@ -394,7 +394,7 @@ Animator:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1105710310}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: d56f720d6a6bc6f4f9b531d6faee2c2b, type: 2}
   m_CullingMode: 0
@@ -579,7 +579,7 @@ Animator:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1635560389}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: d56f720d6a6bc6f4f9b531d6faee2c2b, type: 2}
   m_CullingMode: 0
@@ -770,7 +770,7 @@ MonoBehaviour:
   targetB: {fileID: 956109648}
   targetC: {fileID: 1635560389}
   targetD: {fileID: 1790336733}
-  camera: {fileID: 0}
+  camera: {fileID: 1651639378}
 --- !u!1 &1790336733
 GameObject:
   m_ObjectHideFlags: 0
