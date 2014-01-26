@@ -14,6 +14,9 @@ public class MapGenerator : MonoBehaviour
 	Sprite track_incline1;
 	Sprite track_incline2;
 
+	// obstacles
+	Sprite obstacle_turtle;
+
 	GameObject mapParent;
 	const float tileWidth  = 4;
 	const float tileHeight = 4;
@@ -188,6 +191,34 @@ public class MapGenerator : MonoBehaviour
 		mostRecentXTileGenerated = rightEdge;
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	int tilesTillNextObstacle = 20;
+	void SpawnObstacles(int leftEdge, int rightEdge)
+	{
+		// for now, just spawn a turtle every 20 tiles
+		int distance = rightEdge - leftEdge;
+		while (tilesTillNextObstacle < distance)
+		{
+			int spawnTileLocation = leftEdge + tilesTillNextObstacle;
+			tilesTillNextObstacle += 20;
+
+			// create turtle
+			var turtle = new GameObject();
+			BoxCollider2D boxCollider = turtle.AddComponent<BoxCollider2D>();
+			boxCollider.size = new Vector2(tileWidth, tileHeight);
+			turtle.AddComponent<Rigidbody2D>();
+			SpriteRenderer spriteRenderer = turtle.AddComponent<SpriteRenderer>();
+			spriteRenderer.sprite = obstacle_turtle;
+			spriteRenderer.sortingOrder = 1;
+			turtle.transform.position = new Vector2(spawnTileLocation * tileWidth, (GenerateElevation(spawnTileLocation)+1) * tileHeight) + mapOffset;
+			turtle.transform.parent = mapParent.transform;
+			turtle.name = "obstacle";
+			Obstacle obstacle = turtle.AddComponent<Obstacle>();
+		}
+		tilesTillNextObstacle -= distance;
+	}
+	////////////////////////////////////////////////////////////////////////////////
+
 	void Start()
 	{
 		// create parent for map
@@ -203,14 +234,8 @@ public class MapGenerator : MonoBehaviour
 		track_incline1 = Resources.Load<Sprite>("Art/Tiles/track_incline1"); // far incline
 		track_incline2 = Resources.Load<Sprite>("Art/Tiles/track_incline2"); // near incline
 
-		Sprite[] tiles = new Sprite[7];
-		tiles[0] = track_decline1;
-		tiles[1] = track_decline2;
-		tiles[2] = track_flat1;
-		tiles[3] = track_flat2;
-		tiles[4] = track_flat3;
-		tiles[5] = track_incline1;
-		tiles[6] = track_incline2;
+		// obstacles
+		obstacle_turtle = Resources.Load<Sprite>("Art/Obstacles/turtle");
 
 		// create some tiles procedurally
 		Update();
@@ -223,8 +248,11 @@ public class MapGenerator : MonoBehaviour
 		float farEdge = -mapOffset.x + camera.transform.position.x + leadingDistanceInTiles * tileWidth * camera.orthographicSize / 20.0f;
 		if (camera && farEdge > mostRecentXTileGenerated*tileWidth)
 		{
-			//GenerateTileSpan(mostRecentXTileGenerated+1, mostRecentXTileGenerated + leadingDistanceInTiles);
-			GenerateTileSpan(mostRecentXTileGenerated, (int)farEdge/(int)tileWidth);
+			int leftEdge = mostRecentXTileGenerated;
+			int rightEdge = (int)farEdge/(int)tileWidth;
+			GenerateTileSpan(leftEdge, rightEdge);
+
+			SpawnObstacles(leftEdge, rightEdge);
 		}
 	}
 }
