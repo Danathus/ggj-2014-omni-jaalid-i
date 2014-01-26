@@ -97,7 +97,9 @@ public class PlayerMovement : MonoBehaviour
 	Sprite landSprite;
 	Sprite slideSprite;
 
+	Animator anim;
 	// Use this for initialization
+	
 	void Start()
 	{
 		brain = CreateBrain();
@@ -127,13 +129,32 @@ public class PlayerMovement : MonoBehaviour
 			sprRenderer.sprite = standSprite;
 			sprRenderer.sortingOrder = 1;
 		}
+		anim = GetComponent<Animator> ();
 	}
 
 	float Height()
 	{
 		return myTransform.localScale.y;
 	}
-	private bool onGround = false;
+	private bool _onGround = false;
+
+	public bool onGround
+	{
+		get
+		{
+			return _onGround;
+		}
+
+		set
+		{
+			if (value && !_onGround)
+			{
+				anim.SetTrigger ("HitGround");
+			}
+			_onGround = value;
+		}
+	}
+
 	bool OnGround()
 	{
 		return onGround;
@@ -190,6 +211,7 @@ public class PlayerMovement : MonoBehaviour
 
 			Rigidbody2D rbody = GetComponent<Rigidbody2D>();
 			rbody.velocity = new Vector2(rbody.velocity.x, jumpSpeed);
+			anim.SetTrigger ("Jump");
 		}
 		onGround = false;
 	}
