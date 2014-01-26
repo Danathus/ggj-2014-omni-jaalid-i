@@ -9,7 +9,7 @@ public class CameraMovement : MonoBehaviour {
 	public Camera camera;
 	float zPos;
 	Transform cameraTransform;
-	const float minFOV = 15.0f;
+	const float minFOV = 25.0f;
 
 	GameObject[] targets;
 
@@ -56,7 +56,7 @@ public class CameraMovement : MonoBehaviour {
 
 		}*/
 		float maxTargetDistance = FindMaxTargetDistance();
-		float targetOrthographicSize = Mathf.Min(Mathf.Max(minFOV, (maxTargetDistance +10.0f)/4), Mathf.Infinity);
+		float targetOrthographicSize = Mathf.Min(Mathf.Max(minFOV, (maxTargetDistance +10.0f)/3), Mathf.Infinity);
 		camera.orthographicSize = Mathf.Lerp (camera.orthographicSize, targetOrthographicSize, Time.deltaTime * 10);
 		//gameObject.camera.orthographicSize
 	}
