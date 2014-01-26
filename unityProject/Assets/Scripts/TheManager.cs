@@ -130,13 +130,20 @@ public class TheManager : MonoBehaviour
 		}
 		else if (timePassed > 40)
 		{
-			GameObject.Find("Jeep").GetComponent<Jeep>().shouldGetClose = true;
+			if (!racerJeepMusic)
+			{
+				racerMusicPlayer.GetComponent<AudioSource>().Stop();
+				racerJeepMusic = Resources.Load<AudioClip>("Music/RacerJeep/Decktonic_-_05_-_Braindance");
+				racerJeepMusicPlayer = PlayClipAt(racerJeepMusic, camera.transform.position);
+				GameObject.Find("Jeep").GetComponent<Jeep>().shouldGetClose = true;
+			}
 		}
 		else if (timePassed >= 0 && !racerMusic)
 		{
 			racerMusic = Resources.Load<AudioClip>("Music/Racer/Decktonic_-_08_-_Fair_Game");
-			AudioSource.PlayClipAtPoint(racerMusic, camera.transform.position);
+			racerMusicPlayer = PlayClipAt(racerMusic, camera.transform.position);
 		}
+		Debug.Log(timePassed);
 	}
 
 	public static GameObject PlayClipAt(AudioClip clip, Vector3 pos)
@@ -151,4 +158,6 @@ public class TheManager : MonoBehaviour
 	}
 
 	AudioClip racerMusic;
+	AudioClip racerJeepMusic;
+	GameObject racerMusicPlayer, racerJeepMusicPlayer;
 }
