@@ -288,23 +288,18 @@ public class PlayerMovement : MonoBehaviour
 			//meshRenderer.material = (Resources.Load("Livingst") as Material);
 			
 			talkText.renderer.material = Resources.Load("arialbd", typeof(Material)) as Material; 
-			talkLayer.text = "line " + brain.isTalking;
+			talkLayer.text = GenerateTalkText();
 			talkLayer.anchor = TextAnchor.LowerCenter;
 			talkLayer.fontSize = 20;
 			talkLayer.characterSize = 2.0f;
 			talkLayer.renderer.material.color = Color.black;
 			Font myFont = Resources.Load("arialbd", typeof(Font)) as Font;
 			talkLayer.font = myFont;
-			
-			
-			
-			
 		} 
 		else if (talkBubble) 
 		{
 			talkBubble.transform.position = new Vector2 (gameObject.transform.position.x, gameObject.transform.position.y + 20);
 			talkText.transform.position = new Vector3 (gameObject.transform.position.x, gameObject.transform.position.y + 20, -5.0f);
-			
 		}
 		else
 		{
@@ -341,5 +336,31 @@ public class PlayerMovement : MonoBehaviour
 	void UpdateStunEffect()
 	{
 		mStunCountdown = Mathf.Max(mStunCountdown - Time.deltaTime, 0);
+	}
+
+	string GenerateTalkText()
+	{
+		string[] racerJokes = new string[]{
+			"Am I racing with myself?",
+			"Who puts obstacles in the middle of a desert?",
+			"Was it dash then jump or jump then dash...",
+			"Did the race come before the obstacles, or the obstacles before the race?",
+			"God I hope I don't die",
+			"Please don't catch up.. Please don't catch up ...",
+			"I'm tired",
+			"Am I wearing shoes? I can't tell",
+			"This race is race-ist",
+			"Was running always this hard?",
+			"My cousin died once when he jumped instead of dashing",
+			"Is that guy wearing roller skates?",
+			"I think I'll jump this time",
+			"What if there were no hypothetical questions?",
+			"How can you guys talk so much?!",
+			"They Don’t Think It Be Like It Is, But It Do",
+			"Now this is the story all about, how my life got flip-turned upside-down...",
+			"We're no strangers to love. You know the rules and so do I..."
+		};
+		//return "line " + brain.isTalking;
+		return racerJokes [brain.isTalking % racerJokes.Length];
 	}
 }
