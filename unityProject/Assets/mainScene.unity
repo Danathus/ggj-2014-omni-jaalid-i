@@ -136,6 +136,50 @@ Transform:
   m_LocalScale: {x: 1, y: .999999166, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
+--- !u!1 &544431831
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 544431833}
+  - 114: {fileID: 544431832}
+  m_Layer: 0
+  m_Name: TheManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &544431832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 544431831}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c3207289e4701747840981f515bcc2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  camera: {fileID: 1651639378}
+  playerA: {fileID: 1105710310}
+  playerB: {fileID: 956109648}
+  playerC: {fileID: 1635560389}
+  playerD: {fileID: 856839947}
+  jeep: {fileID: 891902624}
+--- !u!4 &544431833
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 544431831}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1487.51453, y: 41.1901093, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
 --- !u!1 &856839947
 GameObject:
   m_ObjectHideFlags: 0
@@ -196,6 +240,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469c831cfc979a7428d763117d3cc179, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  thinkingEnabled: 1
   brainType: 3
 --- !u!50 &856839951
 Rigidbody2D:
@@ -457,6 +502,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469c831cfc979a7428d763117d3cc179, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  thinkingEnabled: 1
   brainType: 1
 --- !u!4 &956109655
 Transform:
@@ -618,6 +664,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469c831cfc979a7428d763117d3cc179, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  thinkingEnabled: 1
   brainType: 0
 --- !u!4 &1105710317
 Transform:
@@ -802,6 +849,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469c831cfc979a7428d763117d3cc179, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  thinkingEnabled: 1
   brainType: 2
 --- !u!4 &1635560396
 Transform:
