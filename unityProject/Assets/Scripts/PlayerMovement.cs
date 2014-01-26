@@ -68,7 +68,7 @@ public class PlayerMovement : MonoBehaviour
 			thought.run = Math.Min(Math.Max(state.LeftStickAxis.x + state.dPadAxis.x, -1.0f), 1.0f);
 			if(state.X && isTalking == 0)
 			{
-				thought.talk = UnityEngine.Random.Range(0, 18);
+				thought.talk = UnityEngine.Random.Range(0, racerJokes.Length);
 			}
 			return thought;
 		}
@@ -276,9 +276,10 @@ public class PlayerMovement : MonoBehaviour
 			talkBubble.name = "talkBubble";
 			Destroy(talkBubble, talkStayTime);
 			talkBubble.transform.position = new Vector2 (gameObject.transform.position.x, gameObject.transform.position.y + 20);
+			talkBubble.transform.localScale = new Vector2(1.1f, 1.1f);
 			
 			talkText = new GameObject ();
-			talkText.transform.position = new Vector3 (gameObject.transform.position.x, gameObject.transform.position.y + 20, -5.0f);
+			talkText.transform.position = new Vector3 (gameObject.transform.position.x, gameObject.transform.position.y /*+ 20*/, -5.0f);
 			Destroy(talkText, talkStayTime);
 			//talkText.renderer.material.color = Color.black;
 			//talkText.transform.localScale = new Vector2(10, 10);
@@ -290,16 +291,16 @@ public class PlayerMovement : MonoBehaviour
 			talkText.renderer.material = Resources.Load("arialbd", typeof(Material)) as Material; 
 			talkLayer.text = GenerateTalkText();
 			talkLayer.anchor = TextAnchor.LowerCenter;
-			talkLayer.fontSize = 20;
+			talkLayer.fontSize = 16; //20;
 			talkLayer.characterSize = 2.0f;
 			talkLayer.renderer.material.color = Color.black;
 			Font myFont = Resources.Load("arialbd", typeof(Font)) as Font;
 			talkLayer.font = myFont;
 		} 
-		else if (talkBubble) 
+		if (talkBubble) 
 		{
 			talkBubble.transform.position = new Vector2 (gameObject.transform.position.x, gameObject.transform.position.y + 20);
-			talkText.transform.position = new Vector3 (gameObject.transform.position.x, gameObject.transform.position.y + 20, -5.0f);
+			talkText.transform.position = new Vector3 (gameObject.transform.position.x, gameObject.transform.position.y +13/*+ 20*/, -5.0f);
 		}
 		else
 		{
@@ -338,28 +339,29 @@ public class PlayerMovement : MonoBehaviour
 		mStunCountdown = Mathf.Max(mStunCountdown - Time.deltaTime, 0);
 	}
 
+	static string[] racerJokes = new string[]{
+		"Am I racing\nwith myself?",
+		"Who puts obstacles\nin the middle\nof a desert?",
+		"Was it dash then\njump or jump\nthen dash...",
+		"Did the race come\nbefore the obstacles,\nor the obstacles\nbefore the race?",
+		"God I hope\nI don't die",
+		"Please don't\ncatch up..\nPlease don't\ncatch up ...",
+		"I'm tired",
+		"Am I wearing\nshoes? I\ncan't tell",
+		"This race is race-ist",
+		"Was running\nalways\nthis hard?",
+		"My cousin died\nonce when he\njumped instead\nof dashing",
+		"Is that guy wearing\nroller skates?",
+		"I think I'll jump\nthis time",
+		"What if there\nwere no hypo-\nthetical questions?",
+		"How can you\nguys talk\nso much?!",
+		"They Don’t\nThink It Be\nLike It Is,\nBut It Do",
+		"Now this is the\nstory all about, how\nmy life got flip-\nturned upside-down...",
+		"We're no stran-\ngers to love. You\nknow the rules\nand so do I..."
+	};
+
 	string GenerateTalkText()
 	{
-		string[] racerJokes = new string[]{
-			"Am I racing with myself?",
-			"Who puts obstacles in the middle of a desert?",
-			"Was it dash then jump or jump then dash...",
-			"Did the race come before the obstacles, or the obstacles before the race?",
-			"God I hope I don't die",
-			"Please don't catch up.. Please don't catch up ...",
-			"I'm tired",
-			"Am I wearing shoes? I can't tell",
-			"This race is race-ist",
-			"Was running always this hard?",
-			"My cousin died once when he jumped instead of dashing",
-			"Is that guy wearing roller skates?",
-			"I think I'll jump this time",
-			"What if there were no hypothetical questions?",
-			"How can you guys talk so much?!",
-			"They Don’t Think It Be Like It Is, But It Do",
-			"Now this is the story all about, how my life got flip-turned upside-down...",
-			"We're no strangers to love. You know the rules and so do I..."
-		};
 		//return "line " + brain.isTalking;
 		return racerJokes [brain.isTalking % racerJokes.Length];
 	}
