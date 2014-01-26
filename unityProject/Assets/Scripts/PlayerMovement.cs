@@ -59,6 +59,7 @@ public class PlayerMovement : MonoBehaviour
 				: 0;
 			thought.jump = state.A;
 			thought.run = Math.Min(Math.Max(state.LeftStickAxis.x + state.dPadAxis.x, -1.0f), 1.0f);
+			thought.talk = state.X ? 1 : 0;
 			return thought;
 		}
 	}
