@@ -7490,11 +7490,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43087a4b276c09746bbcdbf837492f0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetA: {fileID: 0}
-  targetB: {fileID: 0}
+  targetA: {fileID: 58358461}
+  targetB: {fileID: 2087023879}
   targetC: {fileID: 0}
   targetD: {fileID: 0}
-  camera: {fileID: 0}
+  camera: {fileID: 1651639378}
 --- !u!1 &1657305563
 GameObject:
   m_ObjectHideFlags: 0
