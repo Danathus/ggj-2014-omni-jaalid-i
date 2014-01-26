@@ -19,8 +19,8 @@ public class PlayerMovement : MonoBehaviour
 
 	private Transform myTransform;
 
-	const float jumpSpeed = 50.0f;
-	const float maxRunSpeed = 30;
+	const float jumpSpeed = 100.0f; //50.0f;
+	const float maxRunSpeed = 60;
 	Vector3 startScale;
 
 	class Thought
