@@ -28,6 +28,7 @@ public class PlayerMovement : MonoBehaviour
 		public bool jump;
 		public float run;
 		public float duck; // [0, 1] -- how much you are ducking (0 is not ducking at all)
+		public int talk; // the index of the image want to show, 0 nothing to talk
 		public bool thoughtless()
 		{
 			if (!jump && (run < 0.2) && (duck < 0.1f))
@@ -146,6 +147,7 @@ public class PlayerMovement : MonoBehaviour
 		{
 			Jump(thought);
 		}
+		Talk (thought);
 		if (thought.thoughtless ()) 
 		{
 			if (standSprite) 
@@ -210,6 +212,26 @@ public class PlayerMovement : MonoBehaviour
 		}
 		myTransform.eulerAngles = new Vector3(0, 0, -rbody.velocity.x/3);
 	}
+	int talking = 0;
+	GameObject talkBubble;
+	void Talk(Thought thought)
+	{
+		
+		if (thought.talk > 0 && thought.talk != talking) {
+			talkBubble = new GameObject ();
+			Sprite talkSprite = Resources.Load<Sprite> ("Art/Basketballer/basketballer_" + "blue" + "_stand1");
+			
+			SpriteRenderer spriteRenderer = talkBubble.AddComponent<SpriteRenderer> ();
+			spriteRenderer.sprite = talkSprite;
+			talking = thought.talk;
+			talkBubble.name = "talkBubble";
+			
+		} 
+		else if (talking > 0 && talkBubble) 
+		{
+			talkBubble.transform.position = new Vector2 (gameObject.transform.position.x, gameObject.transform.position.y + 20);
+		}
+	}
 
 	//#if IGNORE
 	void OnCollisionEnter2D(Collision2D collision)
@@ -228,4 +250,5 @@ public class PlayerMovement : MonoBehaviour
 		}
     }
 	//#endif
+
 }
