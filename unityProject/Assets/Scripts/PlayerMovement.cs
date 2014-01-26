@@ -109,11 +109,14 @@ public class PlayerMovement : MonoBehaviour
 	Sprite landSprite;
 	Sprite slideSprite;
 
+	Animator anim;
 	// Use this for initialization
+	
 	void Start()
 	{
 		brain = CreateBrain();
 		myTransform = transform;
+		myTransform.position = myTransform.position + new Vector3(0, 100, 0);
 		startScale = new Vector3(myTransform.localScale.x, myTransform.localScale.y, myTransform.localScale.z);
 		//Resources.Load<Sprite> ("/Art/Basketballer/basketballer_blue_land1.png");
 
@@ -135,15 +138,35 @@ public class PlayerMovement : MonoBehaviour
 			landSprite = Resources.Load<Sprite> (filepath + color + "_land1");
 			slideSprite = Resources.Load<Sprite> (filepath + color + "_slide");
 			SpriteRenderer sprRenderer = GetComponent<SpriteRenderer> ();
-			sprRenderer.sprite = standSprite;  
+			sprRenderer.sprite = standSprite;
+			sprRenderer.sortingOrder = 1;
 		}
+		anim = GetComponent<Animator> ();
 	}
 
 	float Height()
 	{
 		return myTransform.localScale.y;
 	}
-	private bool onGround = false;
+	private bool _onGround = false;
+
+	public bool onGround
+	{
+		get
+		{
+			return _onGround;
+		}
+
+		set
+		{
+			if (value && !_onGround)
+			{
+				anim.SetTrigger ("HitGround");
+			}
+			_onGround = value;
+		}
+	}
+
 	bool OnGround()
 	{
 		return onGround;
@@ -200,29 +223,22 @@ public class PlayerMovement : MonoBehaviour
 
 			Rigidbody2D rbody = GetComponent<Rigidbody2D>();
 			rbody.velocity = new Vector2(rbody.velocity.x, jumpSpeed);
+			anim.SetTrigger ("Jump");
 		}
 		onGround = false;
 	}
 
 	void Run(Thought thought)
 	{
-
 		Rigidbody2D rbody = GetComponent<Rigidbody2D>();
 
 		float currVelX = thought.run;
-		if (Math.Abs(currVelX) > 0.1f)
+		if(runSprite && OnGround())
 		{
-			if(runSprite && OnGround())
-			{
-				SpriteRenderer sprRenderer = GetComponent<SpriteRenderer>();
-				sprRenderer.sprite = runSprite;  
-			}
-			rbody.velocity = new Vector2(currVelX * maxRunSpeed, rbody.velocity.y);
+			SpriteRenderer sprRenderer = GetComponent<SpriteRenderer>();
+			sprRenderer.sprite = runSprite;  
 		}
-		else
-		{
-			rbody.velocity = new Vector2(rbody.velocity.x * 0.1f, rbody.velocity.y);
-		}
+		rbody.velocity = new Vector2((currVelX + 1.0f) * maxRunSpeed, rbody.velocity.y);
 		myTransform.eulerAngles = new Vector3(0, 0, -rbody.velocity.x/3);
 	}
 	public TextMesh textMeshPrefab;
