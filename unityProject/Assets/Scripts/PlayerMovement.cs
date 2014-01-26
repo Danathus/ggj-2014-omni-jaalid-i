@@ -142,7 +142,7 @@ public class PlayerMovement : MonoBehaviour
 		{
 			standSprite = Resources.Load<Sprite> (filepath + color + "_stand1");
 			runSprite = Resources.Load<Sprite> (filepath + color + "_run1");
-			jumpSprite = Resources.Load<Sprite> (filepath + color + "_jump1");
+			jumpSprite = Resources.Load<Sprite> (filepath + color + "_jump2");
 			landSprite = Resources.Load<Sprite> (filepath + color + "_land1");
 			slideSprite = Resources.Load<Sprite> (filepath + color + "_slide");
 			SpriteRenderer sprRenderer = GetComponent<SpriteRenderer> ();
@@ -176,6 +176,11 @@ public class PlayerMovement : MonoBehaviour
 			if (value && !_onGround)
 			{
 				anim.SetTrigger ("HitGround");
+				if(landSprite)
+				{
+					SpriteRenderer sprRenderer = GetComponent<SpriteRenderer> ();
+					sprRenderer.sprite = landSprite;
+				}
 			}
 			_onGround = value;
 		}
@@ -231,7 +236,7 @@ public class PlayerMovement : MonoBehaviour
 			
 			sprRenderer.sprite = slideSprite; 	
 		}
-		myTransform.localScale = new Vector3(startScale.x * (1.0f + thought.duck), startScale.y * (1.0f - thought.duck/2), startScale.z);
+		//myTransform.localScale = new Vector3(startScale.x * (1.0f + thought.duck), startScale.y * (1.0f - thought.duck/2), startScale.z);
 
 		Rigidbody2D rbody = GetComponent<Rigidbody2D>();
 		rbody.velocity = new Vector2(rbody.velocity.x, rbody.velocity.y + Physics2D.gravity.y*thought.duck);
