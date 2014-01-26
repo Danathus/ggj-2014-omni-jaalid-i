@@ -18,6 +18,14 @@ public class MapGenerator : MonoBehaviour
 	const float tileWidth  = 4;
 	const float tileHeight = 4;
 
+	int leadingDistanceInTiles = 20; //500;
+	int mostRecentXTileGenerated = 0;
+
+	Vector2 mapOffset = new Vector2(-75, -75);
+	//Vector2 mapOffset = new Vector2(0, 0);
+	
+	public Camera camera;
+
 	enum CollisionShape
 	{
 		None,
@@ -63,9 +71,41 @@ public class MapGenerator : MonoBehaviour
 		cube.name = "tile";
 	}
 
+	float DeterministicRandom(int input) // output in [0, 1]
+	{
+		/*
+		UnityEngine.Random.seed = input;
+		float randomValue = UnityEngine.Random.value;
+		/*/
+		System.Random random = new System.Random((int)(input * 100 ^ 0xdeadbeef));
+		float randomValue = (float)random.Next(0, 1000) / 1000.0f;
+		//*/
+		//Debug.Log ("" + input + " -> " + randomValue);
+		return randomValue;
+	}
+
 	int GenerateElevation(int x)
 	{
-		int elevation = (int)(10.0f*Mathf.Sin(x / 100.0f * 2.0f * (float)Math.PI)) + 10;
+		//int elevation = (int)(10.0f*Mathf.Sin(x / 100.0f * 2.0f * (float)Math.PI)) + 10; // sine wave function
+
+		// make an elevation decision every 10 tiles
+		int decisionFrequency = 10;
+		// round down to the earlier decision point
+		int earlierDecisionPoint = (x / decisionFrequency) * decisionFrequency;
+		// and find the next decision point
+		int laterDecisionPoint = earlierDecisionPoint + decisionFrequency;
+
+		// find the heights at these decision points
+		int midLevel = 20;
+		float tileAmplitude = 10.0f;
+		int earlierElevation = midLevel + (int)(DeterministicRandom(earlierDecisionPoint)*tileAmplitude);
+		int laterElevation = midLevel + (int)(DeterministicRandom(laterDecisionPoint)*tileAmplitude);
+
+		// interpolate to find our current elevation
+		float interpolationFrac = (float)(x - earlierDecisionPoint) / decisionFrequency;
+		float interpolatedElevation = earlierElevation * (1.0f - interpolationFrac) + laterElevation * interpolationFrac;
+		int elevation = (int)interpolatedElevation;
+
 		return elevation;
 	}
 
@@ -125,7 +165,29 @@ public class MapGenerator : MonoBehaviour
 		}
 		return CollisionShape.None;
 	}
-	
+
+	void GenerateTileSpan(int leftEdge, int rightEdge)
+	{
+		int prevElevation, currElevation = GenerateElevation(leftEdge), nextElevation = GenerateElevation(leftEdge+1);
+		for (int x = leftEdge; x < rightEdge; ++x)
+		{
+			prevElevation = currElevation;
+			currElevation = nextElevation;
+			nextElevation = GenerateElevation(x+1);
+			for (int y = 0; y < currElevation; ++y)
+			{
+				Sprite tileChoice = ChooseElevationTile(y, prevElevation, currElevation, nextElevation);
+				CreateTile(new Vector2(x * tileWidth, y * tileHeight) + mapOffset, tileChoice, ChooseCollisionShape(tileChoice));
+				if (y == currElevation-1)
+				{
+					Sprite aboveTile = ChooseAboveTile(tileChoice);
+					CreateTile(new Vector2(x * tileWidth, (y+1) * tileHeight) + mapOffset, aboveTile, ChooseCollisionShape(aboveTile));
+				}
+			}
+		}
+		mostRecentXTileGenerated = rightEdge;
+	}
+
 	void Start()
 	{
 		// create parent for map
@@ -150,31 +212,19 @@ public class MapGenerator : MonoBehaviour
 		tiles[5] = track_incline1;
 		tiles[6] = track_incline2;
 
-		Vector2 offset = new Vector2(-75, -75);
-
 		// create some tiles procedurally
-		//int tileIdx = 0;
-		int prevElevation, currElevation = 0, nextElevation = GenerateElevation(1);
-		for (int x = 0; x < 1000; ++x)
-		{
-			prevElevation = currElevation;
-			currElevation = nextElevation;
-			nextElevation = GenerateElevation(x+1);
-			for (int y = 0; y < currElevation; ++y)
-			{
-				Sprite tileChoice = ChooseElevationTile(y, prevElevation, currElevation, nextElevation);
-				CreateTile(new Vector2(x * tileWidth, y * tileHeight) + offset, tileChoice, ChooseCollisionShape(tileChoice));
-				if (y == currElevation-1)
-				{
-					Sprite aboveTile = ChooseAboveTile(tileChoice);
-					CreateTile(new Vector2(x * tileWidth, (y+1) * tileHeight) + offset, aboveTile, ChooseCollisionShape(aboveTile));
-				}
-			}
-		}
+		Update();
+		//GenerateTileSpan(mostRecentXTileGenerated+1, mostRecentXTileGenerated + leadingDistanceInTiles);
 	}
 
 	void Update()
 	{
 		// per frame update
+		float farEdge = -mapOffset.x + camera.transform.position.x + leadingDistanceInTiles * tileWidth * camera.orthographicSize / 20.0f;
+		if (camera && farEdge > mostRecentXTileGenerated*tileWidth)
+		{
+			//GenerateTileSpan(mostRecentXTileGenerated+1, mostRecentXTileGenerated + leadingDistanceInTiles);
+			GenerateTileSpan(mostRecentXTileGenerated, (int)farEdge/(int)tileWidth);
+		}
 	}
 }
