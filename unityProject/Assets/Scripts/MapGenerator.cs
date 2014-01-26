@@ -18,11 +18,44 @@ public class MapGenerator : MonoBehaviour
 	const float tileWidth  = 4;
 	const float tileHeight = 4;
 
-	void CreateTile(Vector2 pos, Sprite tileSprite)
+	enum CollisionShape
+	{
+		None,
+		Square,
+		Incline,
+		Decline
+	}
+
+	void CreateTile(Vector2 pos, Sprite tileSprite, CollisionShape collisionShape)
 	{
 		var cube = new GameObject();
-		BoxCollider2D boxCollider = cube.AddComponent<BoxCollider2D>();
-		boxCollider.size = new Vector2(tileWidth, tileHeight);
+		switch (collisionShape)
+		{
+		case CollisionShape.Square:
+			BoxCollider2D boxCollider = cube.AddComponent<BoxCollider2D>();
+			boxCollider.size = new Vector2(tileWidth, tileHeight);
+			break;
+		case CollisionShape.Incline:
+			{
+				PolygonCollider2D polyCollider = cube.AddComponent<PolygonCollider2D>();
+				Vector2[] points = new Vector2[3];
+				points[0] = new Vector2(-tileWidth/2, -tileHeight/2);
+				points[1] = new Vector2( tileWidth/2, -tileHeight/2);
+				points[2] = new Vector2( tileWidth/2,  tileHeight/2);
+				polyCollider.SetPath(0, points);
+			}
+			break;
+		case CollisionShape.Decline:
+			{
+				PolygonCollider2D polyCollider = cube.AddComponent<PolygonCollider2D>();
+				Vector2[] points = new Vector2[3];
+				points[0] = new Vector2(-tileWidth/2,  tileHeight/2);
+				points[1] = new Vector2(-tileWidth/2, -tileHeight/2);
+				points[2] = new Vector2( tileWidth/2, -tileHeight/2);
+				polyCollider.SetPath(0, points);
+			}
+			break;
+		}
 		SpriteRenderer spriteRenderer = cube.AddComponent<SpriteRenderer>();
 		spriteRenderer.sprite = tileSprite;
 		cube.transform.position = pos;
@@ -36,6 +69,46 @@ public class MapGenerator : MonoBehaviour
 		return elevation;
 	}
 
+	Sprite ChooseElevationTile(int y, int prevElevation, int currElevation, int nextElevation)
+	{
+		Sprite tileChoice = track_flat3; // default to underground
+		if (y == currElevation-1) // if we're right on the top...
+		{
+			// default to flat top unless proven otherwise
+			tileChoice = track_flat2;
+			
+			// consider previous and next elevation
+			if (prevElevation < currElevation && currElevation <= nextElevation)
+			{
+				// incline
+				tileChoice = track_incline2;
+			}
+			if (prevElevation >= currElevation && currElevation > nextElevation)
+			{
+				// decline
+				tileChoice = track_decline2;
+			}
+		}
+		return tileChoice;
+	}
+
+	CollisionShape ChooseCollisionShape(Sprite tile)
+	{
+		if (tile == track_decline2)
+		{
+			return CollisionShape.Decline;
+		}
+		if (tile == track_incline2)
+		{
+			return CollisionShape.Incline;
+		}
+		if (tile == track_flat2 || tile == track_flat3)
+		{
+			return CollisionShape.Square;
+		}
+		return CollisionShape.Square;
+	}
+	
 	void Start()
 	{
 		// create parent for map
@@ -43,9 +116,9 @@ public class MapGenerator : MonoBehaviour
 		mapParent.name = "map";
 
 		// initialization
-		track_decline1 = Resources.Load<Sprite>("Art/Tiles/track_decline1"); // far incline
-		track_decline2 = Resources.Load<Sprite>("Art/Tiles/track_decline2"); // near incline
-		track_flat1    = Resources.Load<Sprite>("Art/Tiles/track_flat1");
+		track_decline1 = Resources.Load<Sprite>("Art/Tiles/track_decline1"); // far decline
+		track_decline2 = Resources.Load<Sprite>("Art/Tiles/track_decline2"); // near decline
+		track_flat1    = Resources.Load<Sprite>("Art/Tiles/track_flat1"); // far top of ground
 		track_flat2    = Resources.Load<Sprite>("Art/Tiles/track_flat2"); // top of ground (w/ grass)
 		track_flat3    = Resources.Load<Sprite>("Art/Tiles/track_flat3"); // underground
 		track_incline1 = Resources.Load<Sprite>("Art/Tiles/track_incline1"); // far incline
@@ -64,21 +137,16 @@ public class MapGenerator : MonoBehaviour
 
 		// create some tiles procedurally
 		//int tileIdx = 0;
+		int prevElevation, currElevation = 0, nextElevation = GenerateElevation(1);
 		for (int x = 0; x < 1000; ++x)
 		{
-			int elevation = GenerateElevation(x);
-			for (int y = 0; y < elevation; ++y)
+			prevElevation = currElevation;
+			currElevation = nextElevation;
+			nextElevation = GenerateElevation(x+1);
+			for (int y = 0; y < currElevation; ++y)
 			{
-				Sprite tileChoice = track_flat3; // default to underground
-				if (y == elevation-1) // if we're right on the top...
-				{
-					// for now just choose flat top
-					tileChoice = track_flat2;
-				}
-				//CreateTile(new Vector2(x * tileWidth, y * tileHeight) + offset, track_flat3);
-				//CreateTile(new Vector2(x * tileWidth, y * tileHeight) + offset, tiles[tileIdx]);
-				//tileIdx = (tileIdx + 1) % tiles.Length;
-				CreateTile(new Vector2(x * tileWidth, y * tileHeight) + offset, tileChoice);
+				Sprite tileChoice = ChooseElevationTile(y, prevElevation, currElevation, nextElevation);
+				CreateTile(new Vector2(x * tileWidth, y * tileHeight) + offset, tileChoice, ChooseCollisionShape(tileChoice));
 			}
 		}
 	}
