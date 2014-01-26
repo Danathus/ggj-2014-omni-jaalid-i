@@ -14,6 +14,7 @@ public class PlayerMovement : MonoBehaviour
 		Player4,
 		AI
 	}
+	public bool thinkingEnabled = true;
 	public BrainType brainType = BrainType.Player1;
 
 	private Transform myTransform;
@@ -179,7 +180,7 @@ public class PlayerMovement : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		Thought thought = IsStunned() ? new Thought(false, -1.0f, 0.0f, 0) : brain.Think();
+		Thought thought = IsStunned() || !thinkingEnabled ? new Thought(false, -1.0f, 0.0f, 0) : brain.Think();
 
 		Duck(thought);
 		Run(thought);
@@ -266,7 +267,8 @@ public class PlayerMovement : MonoBehaviour
 	float talkStartTime;
 	void Talk(Thought thought)
 	{
-		if (thought.talk > 0 && thought.talk != brain.isTalking) {
+		if (thought.talk > 0 && thought.talk != brain.isTalking)
+		{
 			talkBubble = new GameObject ();
 			Sprite talkSprite = Resources.Load<Sprite> ("Art/Effects/speechbubble");
 			

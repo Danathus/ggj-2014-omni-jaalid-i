@@ -19,7 +19,7 @@ public class Jeep : MonoBehaviour
 		timePassed += Time.deltaTime;
 
 		float measuredDistanceFromCamera = (camera.transform.position - transform.position).magnitude;
-		float desiredDistanceFromCamera = timePassed > 40.0f ? 10.0f : 100.0f;
+		float desiredDistanceFromCamera = timePassed > 40.0f ? 10.0f : 100.0f; // 40
 		float speed = measuredDistanceFromCamera - desiredDistanceFromCamera; // 40
 
 		Rigidbody2D rBody = GetComponent<Rigidbody2D>();
