@@ -63,9 +63,41 @@ public class MapGenerator : MonoBehaviour
 		cube.name = "tile";
 	}
 
+	float DeterministicRandom(int input) // output in [0, 1]
+	{
+		/*
+		UnityEngine.Random.seed = input;
+		float randomValue = UnityEngine.Random.value;
+		/*/
+		System.Random random = new System.Random((int)(input * 100 ^ 0xdeadbeef));
+		float randomValue = (float)random.Next(0, 1000) / 1000.0f;
+		//*/
+		//Debug.Log ("" + input + " -> " + randomValue);
+		return randomValue;
+	}
+
 	int GenerateElevation(int x)
 	{
-		int elevation = (int)(10.0f*Mathf.Sin(x / 100.0f * 2.0f * (float)Math.PI)) + 10;
+		//int elevation = (int)(10.0f*Mathf.Sin(x / 100.0f * 2.0f * (float)Math.PI)) + 10; // sine wave function
+
+		// make an elevation decision every 10 tiles
+		int decisionFrequency = 10;
+		// round down to the earlier decision point
+		int earlierDecisionPoint = (x / decisionFrequency) * decisionFrequency;
+		// and find the next decision point
+		int laterDecisionPoint = earlierDecisionPoint + decisionFrequency;
+
+		// find the heights at these decision points
+		int midLevel = 20;
+		float tileAmplitude = 10.0f;
+		int earlierElevation = midLevel + (int)(DeterministicRandom(earlierDecisionPoint)*tileAmplitude);
+		int laterElevation = midLevel + (int)(DeterministicRandom(laterDecisionPoint)*tileAmplitude);
+
+		// interpolate to find our current elevation
+		float interpolationFrac = (float)(x - earlierDecisionPoint) / decisionFrequency;
+		float interpolatedElevation = earlierElevation * (1.0f - interpolationFrac) + laterElevation * interpolationFrac;
+		int elevation = (int)interpolatedElevation;
+
 		return elevation;
 	}
 
@@ -155,7 +187,7 @@ public class MapGenerator : MonoBehaviour
 		// create some tiles procedurally
 		//int tileIdx = 0;
 		int prevElevation, currElevation = 0, nextElevation = GenerateElevation(1);
-		for (int x = 0; x < 1000; ++x)
+		for (int x = 0; x < 300; ++x)
 		{
 			prevElevation = currElevation;
 			currElevation = nextElevation;
