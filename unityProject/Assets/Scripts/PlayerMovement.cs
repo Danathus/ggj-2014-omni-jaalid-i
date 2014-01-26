@@ -121,7 +121,8 @@ public class PlayerMovement : MonoBehaviour
 			landSprite = Resources.Load<Sprite> (filepath + color + "_land1");
 			slideSprite = Resources.Load<Sprite> (filepath + color + "_slide");
 			SpriteRenderer sprRenderer = GetComponent<SpriteRenderer> ();
-			sprRenderer.sprite = standSprite;  
+			sprRenderer.sprite = standSprite;
+			sprRenderer.sortingOrder = 1;
 		}
 	}
 
