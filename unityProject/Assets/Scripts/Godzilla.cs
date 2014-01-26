@@ -23,17 +23,6 @@ public class Godzilla : MonoBehaviour
 		GodzillaFootstep3 = Resources.Load<AudioClip>("Soundfx/GodzillaFootstep3");
 	}
 
-	GameObject PlayClipAt(AudioClip clip, Vector3 pos)
-	{
-		var tempGO = new GameObject("TempAudio"); // create the temp object
-		tempGO.transform.position = pos; // set its position
-		tempGO.AddComponent<AudioSource>(); // add an audio source
-		tempGO.audio.clip = clip; // define the clip
-		tempGO.audio.Play(); // start the sound
-		Destroy(tempGO, clip.length); // destroy object after clip duration
-		return tempGO; // return reference to the temporary GameObject
-	}
-
 	GameObject isPlaying = null;
 	void Update()
 	{
@@ -56,7 +45,7 @@ public class Godzilla : MonoBehaviour
 		{
 			if (!isPlaying)
 			{
-				isPlaying = PlayClipAt(GodzillaFootstep, camera.transform.position);
+				isPlaying = TheManager.PlayClipAt(GodzillaFootstep, camera.transform.position);
 				//AudioSource.PlayClipAtPoint(GodzillaFootstep, camera.transform.position);
 			}
 		}
