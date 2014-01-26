@@ -252,6 +252,11 @@ public class PlayerMovement : MonoBehaviour
 		{
 			onGround = true;
 		}
+		else if (collision.gameObject.name == "obstacle")
+		{
+			Stun();
+			GameObject.Destroy(collision.gameObject);
+		}
     }
 
 	float mStunCountdown = 0;
