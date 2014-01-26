@@ -38,12 +38,30 @@ public class TheManager : MonoBehaviour
 	{
 		timePassed += Time.deltaTime;
 
-		if (timePassed > 69)
+		if (timePassed > 66)
 		{
+			CameraMovement camMovement = camera.GetComponent<CameraMovement>();
+			if (camMovement.targetB == null)
+			{
+				camMovement.targetB = GameObject.Find("Godzilla");
+				var clip = Resources.Load<AudioClip>("Soundfx/GodzillaRoar");
+				AudioSource.PlayClipAtPoint(clip, GameObject.Find("Main Camera").transform.position); //  new Vector3(0, 0, 0)
+			}
+
+			// tell Jeep to start moving
+			jeep.GetComponent<Jeep>().movementMode = Jeep.MovementMode.PlayerControl;
+		}
+		else if (timePassed > 64)
+		{
+			// have the players fade out and disappear
+			Destroy(playerA);
+			Destroy(playerB);
+			Destroy(playerC);
+			Destroy(playerD);
 		}
 		else if (timePassed > 63 && !talkBubble) // 65
 		{
-			float talkStayTime = 5.0f;
+			float talkStayTime = 3.0f;
 
 			// give a word bubble for the jeep
 			talkBubble = new GameObject();
