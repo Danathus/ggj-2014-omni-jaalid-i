@@ -40,6 +40,9 @@ public class PlayerMovement : MonoBehaviour
 
 	abstract class Brain
 	{
+		public int isTalking;
+		public float timeToTalk;
+		public float timeDontTalk = UnityEngine.Random.Range(5.0f, 15.0f);
 		public abstract Thought Think();
 	}
 
@@ -59,6 +62,10 @@ public class PlayerMovement : MonoBehaviour
 				: 0;
 			thought.jump = state.A;
 			thought.run = Math.Min(Math.Max(state.LeftStickAxis.x + state.dPadAxis.x, -1.0f), 1.0f);
+			if(state.X && isTalking == 0)
+			{
+				thought.talk = UnityEngine.Random.Range(0, 18);
+			}
 			return thought;
 		}
 	}
@@ -69,8 +76,14 @@ public class PlayerMovement : MonoBehaviour
 		{
 			Thought thought = new Thought();
 			thought.duck = 0;
-			thought.jump = true;
+			thought.jump = false;
 			thought.run = 0.25f;
+			if(isTalking == 0 && Time.realtimeSinceStartup - timeToTalk > timeDontTalk)
+			{
+				thought.talk = UnityEngine.Random.Range(1, 19);
+				timeToTalk = Time.realtimeSinceStartup;
+				timeDontTalk = UnityEngine.Random.Range(10.0f, 15.0f);
+			}
 			return thought;
 		}
 	}
@@ -212,24 +225,58 @@ public class PlayerMovement : MonoBehaviour
 		}
 		myTransform.eulerAngles = new Vector3(0, 0, -rbody.velocity.x/3);
 	}
-	int talking = 0;
+	public TextMesh textMeshPrefab;
+	
+	//int talking = 0;
 	GameObject talkBubble;
+	GameObject talkText;
+	const float talkStayTime = 5.0f;
+	float talkStartTime;
 	void Talk(Thought thought)
 	{
-		
-		if (thought.talk > 0 && thought.talk != talking) {
+		if (thought.talk > 0 && thought.talk != brain.isTalking) {
 			talkBubble = new GameObject ();
 			Sprite talkSprite = Resources.Load<Sprite> ("Art/Basketballer/basketballer_" + "blue" + "_stand1");
 			
 			SpriteRenderer spriteRenderer = talkBubble.AddComponent<SpriteRenderer> ();
 			spriteRenderer.sprite = talkSprite;
-			talking = thought.talk;
+			brain.isTalking = thought.talk;
 			talkBubble.name = "talkBubble";
+			Destroy(talkBubble, talkStayTime);
+			talkBubble.transform.position = new Vector2 (gameObject.transform.position.x, gameObject.transform.position.y + 20);
+			
+			talkText = new GameObject ();
+			talkText.transform.position = new Vector3 (gameObject.transform.position.x, gameObject.transform.position.y + 20, -5.0f);
+			Destroy(talkText, talkStayTime);
+			//talkText.renderer.material.color = Color.black;
+			//talkText.transform.localScale = new Vector2(10, 10);
+			
+			MeshRenderer meshRenderer = talkText.AddComponent<MeshRenderer>();
+			TextMesh talkLayer = talkText.AddComponent<TextMesh> ();
+			//meshRenderer.material = (Resources.Load("Livingst") as Material);
+			
+			talkText.renderer.material = Resources.Load("arialbd", typeof(Material)) as Material; 
+			talkLayer.text = "line " + brain.isTalking;
+			talkLayer.anchor = TextAnchor.LowerCenter;
+			talkLayer.fontSize = 20;
+			talkLayer.characterSize = 2.0f;
+			talkLayer.renderer.material.color = Color.black;
+			Font myFont = Resources.Load("arialbd", typeof(Font)) as Font;
+			talkLayer.font = myFont;
+			
+			
+			
 			
 		} 
-		else if (talking > 0 && talkBubble) 
+		else if (talkBubble) 
 		{
 			talkBubble.transform.position = new Vector2 (gameObject.transform.position.x, gameObject.transform.position.y + 20);
+			talkText.transform.position = new Vector3 (gameObject.transform.position.x, gameObject.transform.position.y + 20, -5.0f);
+			
+		}
+		else
+		{
+			brain.isTalking = 0;
 		}
 	}
 

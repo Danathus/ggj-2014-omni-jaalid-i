@@ -142,7 +142,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469c831cfc979a7428d763117d3cc179, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brainType: 0
+  brainType: 4
+  textMeshPrefab: {fileID: 0}
 --- !u!212 &58358463
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -355,7 +356,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469c831cfc979a7428d763117d3cc179, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brainType: 3
+  brainType: 4
+  textMeshPrefab: {fileID: 0}
 --- !u!1 &748308388
 GameObject:
   m_ObjectHideFlags: 0
@@ -674,7 +676,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469c831cfc979a7428d763117d3cc179, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brainType: 2
+  brainType: 4
+  textMeshPrefab: {fileID: 0}
 --- !u!1 &2087023879
 GameObject:
   m_ObjectHideFlags: 0
@@ -687,6 +690,7 @@ GameObject:
   - 61: {fileID: 2087023885}
   - 50: {fileID: 2087023881}
   - 212: {fileID: 2087023880}
+  - 111: {fileID: 2087023882}
   m_Layer: 0
   m_Name: Player2
   m_TagString: Untagged
@@ -732,6 +736,20 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
+--- !u!111 &2087023882
+Animation:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2087023879}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Animation: {fileID: 0}
+  m_Animations: []
+  m_WrapMode: 0
+  m_PlayAutomatically: 1
+  m_AnimatePhysics: 0
+  m_CullingType: 0
 --- !u!4 &2087023883
 Transform:
   m_ObjectHideFlags: 0
@@ -755,6 +773,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brainType: 1
+  textMeshPrefab: {fileID: 0}
 --- !u!61 &2087023885
 BoxCollider2D:
   m_ObjectHideFlags: 0
