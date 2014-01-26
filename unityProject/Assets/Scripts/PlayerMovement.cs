@@ -2,6 +2,7 @@
 using System.Collections;
 using GamepadInput;
 using System;
+using CBX.TileMapping.Unity;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -17,7 +18,6 @@ public class PlayerMovement : MonoBehaviour
 
 	private Transform myTransform;
 
-	Vector2 mPos;
 	const float jumpSpeed = 50.0f;
 	const float maxRunSpeed = 30;
 	Vector3 startScale;
@@ -86,7 +86,6 @@ public class PlayerMovement : MonoBehaviour
 	{
 		brain = CreateBrain();
 		myTransform = transform;
-		mPos = new Vector2(myTransform.position.x, myTransform.position.y);
 		startScale = new Vector3(myTransform.localScale.x, myTransform.localScale.y, myTransform.localScale.z);
 	}
 
@@ -105,7 +104,7 @@ public class PlayerMovement : MonoBehaviour
 	{
 		Thought thought = brain.Think();
 
-		float duckAmount = Duck(thought);
+		Duck(thought);
 		Run(thought);
 		if (OnGround())
 		{
@@ -160,7 +159,7 @@ public class PlayerMovement : MonoBehaviour
             Debug.DrawRay(contact.point, contact.normal, Color.green);
         }
 		//*/
-		if (collision.gameObject.name == "Big Flat Ground")
+		if (collision.gameObject.name == "Big Flat Ground" || collision.gameObject.name == "tile")
 		{
 			onGround = true;
 		}
