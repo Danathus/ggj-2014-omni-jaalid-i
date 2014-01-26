@@ -60,14 +60,15 @@ public class CameraMovement : MonoBehaviour {
 		gameObject.transform.position = new Vector3 (
 			Mathf.Lerp (gameObject.transform.position.x, targetPos.x, posLerpTime),
 			Mathf.Lerp (gameObject.transform.position.y, targetPos.y, posLerpTime),
-			Mathf.Lerp (gameObject.transform.position.z, targetPos.z, posLerpTime));
+			//Mathf.Lerp (gameObject.transform.position.z, targetPos.z, posLerpTime));
+			zPos);
 		/*if (Camera.main.fieldOfView < (maxXPos - minXPos)) 
 		{
 			Camera.main.fieldOfView += 50.0f; //Mathf.Lerp(camera.fieldOfView,60,Time.deltaTime*5);
 
 		}*/
 		float maxTargetDistance = FindMaxTargetDistance();
-		float targetOrthographicSize = Mathf.Min(Mathf.Max(minFOV, (maxTargetDistance +10.0f)/3), Mathf.Infinity);
+		float targetOrthographicSize = Mathf.Min(Mathf.Max(minFOV, (maxTargetDistance +10.0f)/2.2f), Mathf.Infinity);
 		camera.orthographicSize = Mathf.Lerp (camera.orthographicSize, targetOrthographicSize, Time.deltaTime * 10);
 		//gameObject.camera.orthographicSize
 	}
