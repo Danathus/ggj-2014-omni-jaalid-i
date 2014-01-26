@@ -41,7 +41,7 @@ public class TheManager : MonoBehaviour
 		if (timePassed > 69)
 		{
 		}
-		else if (timePassed > 65 && !talkBubble) // 65
+		else if (timePassed > 63 && !talkBubble) // 65
 		{
 			float talkStayTime = 5.0f;
 
@@ -76,7 +76,9 @@ public class TheManager : MonoBehaviour
 			talkLayer.renderer.material.color = Color.black;
 			Font myFont = Resources.Load("arialbd", typeof(Font)) as Font;
 			talkLayer.font = myFont;
-
+		}
+		else if (timePassed > 62)
+		{
 			CameraMovement camMovement = camera.GetComponent<CameraMovement>();
 			camMovement.targetA = jeep;
 			camMovement.targetB = null;

@@ -954,8 +954,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43087a4b276c09746bbcdbf837492f0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetA: {fileID: 1105710310}
-  targetB: {fileID: 956109648}
-  targetC: {fileID: 1635560389}
-  targetD: {fileID: 856839947}
   camera: {fileID: 1651639378}
