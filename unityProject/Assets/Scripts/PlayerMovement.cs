@@ -6,6 +6,7 @@ using CBX.TileMapping.Unity;
 
 public class PlayerMovement : MonoBehaviour
 {
+
 	public enum BrainType
 	{
 		Player1,
@@ -27,6 +28,13 @@ public class PlayerMovement : MonoBehaviour
 		public bool jump;
 		public float run;
 		public float duck; // [0, 1] -- how much you are ducking (0 is not ducking at all)
+		public bool thoughtless()
+		{
+			if (!jump && (run < 0.2) && (duck < 0.1f))
+				return true;
+			else
+				return false;
+		}
 	}
 
 	abstract class Brain
@@ -81,12 +89,40 @@ public class PlayerMovement : MonoBehaviour
 		}
 	}
 
+	Sprite standSprite;
+	Sprite runSprite;
+	Sprite jumpSprite;
+	Sprite landSprite;
+	Sprite slideSprite;
+
 	// Use this for initialization
 	void Start()
 	{
 		brain = CreateBrain();
 		myTransform = transform;
 		startScale = new Vector3(myTransform.localScale.x, myTransform.localScale.y, myTransform.localScale.z);
+		//Resources.Load<Sprite> ("/Art/Basketballer/basketballer_blue_land1.png");
+
+		string filepath = "Art/Basketballer/basketballer_";
+		string color;
+		switch (brainType) 
+		{
+		case BrainType.Player1: color = "blue"; break;
+		case BrainType.Player2: color = "green"; break;
+		case BrainType.Player3: color = "red"; break;
+		case BrainType.Player4: color = "yellow"; break;
+		default:                color = null; break;
+		}
+		if (color != null) 
+		{
+			standSprite = Resources.Load<Sprite> (filepath + color + "_stand1");
+			runSprite = Resources.Load<Sprite> (filepath + color + "_run1");
+			jumpSprite = Resources.Load<Sprite> (filepath + color + "_jump1");
+			landSprite = Resources.Load<Sprite> (filepath + color + "_land1");
+			slideSprite = Resources.Load<Sprite> (filepath + color + "_slide");
+			SpriteRenderer sprRenderer = GetComponent<SpriteRenderer> ();
+			sprRenderer.sprite = standSprite;  
+		}
 	}
 
 	float Height()
@@ -110,10 +146,25 @@ public class PlayerMovement : MonoBehaviour
 		{
 			Jump(thought);
 		}
+		if (thought.thoughtless ()) 
+		{
+			if (standSprite) 
+			{
+				SpriteRenderer sprRenderer = GetComponent<SpriteRenderer>();
+				
+				sprRenderer.sprite = standSprite; 	
+			}
+		}
 	}
 
 	float Duck(Thought thought)
 	{
+		if (slideSprite && thought.duck > 0.5f) 
+		{
+			SpriteRenderer sprRenderer = GetComponent<SpriteRenderer>();
+			
+			sprRenderer.sprite = slideSprite; 	
+		}
 		myTransform.localScale = new Vector3(startScale.x * (1.0f + thought.duck), startScale.y * (1.0f - thought.duck/2), startScale.z);
 
 		Rigidbody2D rbody = GetComponent<Rigidbody2D>();
@@ -126,6 +177,12 @@ public class PlayerMovement : MonoBehaviour
 	{
 		if (thought.jump)
 		{
+			if(jumpSprite)
+			{
+				SpriteRenderer sprRenderer = GetComponent<SpriteRenderer>();
+				sprRenderer.sprite = jumpSprite;  
+			}
+
 			Rigidbody2D rbody = GetComponent<Rigidbody2D>();
 			rbody.velocity = new Vector2(rbody.velocity.x, jumpSpeed);
 		}
@@ -134,11 +191,17 @@ public class PlayerMovement : MonoBehaviour
 
 	void Run(Thought thought)
 	{
+
 		Rigidbody2D rbody = GetComponent<Rigidbody2D>();
 
 		float currVelX = thought.run;
 		if (Math.Abs(currVelX) > 0.1f)
 		{
+			if(runSprite && OnGround())
+			{
+				SpriteRenderer sprRenderer = GetComponent<SpriteRenderer>();
+				sprRenderer.sprite = runSprite;  
+			}
 			rbody.velocity = new Vector2(currVelX * maxRunSpeed, rbody.velocity.y);
 		}
 		else
