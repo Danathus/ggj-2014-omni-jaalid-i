@@ -240,9 +240,7 @@ public class PlayerMovement : MonoBehaviour
 		}
 		rbody.velocity = new Vector2((currVelX + 1.0f) * maxRunSpeed, rbody.velocity.y);
 		myTransform.eulerAngles = new Vector3(0, 0, -rbody.velocity.x/3);
-	}
-	public TextMesh textMeshPrefab;
-	
+	}	
 	//int talking = 0;
 	GameObject talkBubble;
 	GameObject talkText;
@@ -252,7 +250,7 @@ public class PlayerMovement : MonoBehaviour
 	{
 		if (thought.talk > 0 && thought.talk != brain.isTalking) {
 			talkBubble = new GameObject ();
-			Sprite talkSprite = Resources.Load<Sprite> ("Art/Basketballer/basketballer_" + "blue" + "_stand1");
+			Sprite talkSprite = Resources.Load<Sprite> ("Art/Effects/speechbubble");
 			
 			SpriteRenderer spriteRenderer = talkBubble.AddComponent<SpriteRenderer> ();
 			spriteRenderer.sprite = talkSprite;
