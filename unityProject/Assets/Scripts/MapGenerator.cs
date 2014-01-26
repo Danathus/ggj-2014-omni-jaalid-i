@@ -16,6 +16,8 @@ public class MapGenerator : MonoBehaviour
 
 	// obstacles
 	Sprite obstacle_turtle;
+	Sprite obstacle_balloons;
+	Sprite[] allObstacles;
 
 	GameObject mapParent;
 	const float tileWidth  = 4;
@@ -202,20 +204,37 @@ public class MapGenerator : MonoBehaviour
 			int spawnTileLocation = leftEdge + tilesTillNextObstacle;
 			tilesTillNextObstacle += 20;
 
-			// create turtle
-			var turtle = new GameObject();
-			BoxCollider2D boxCollider = turtle.AddComponent<BoxCollider2D>();
-			boxCollider.size = new Vector2(tileWidth, tileHeight);
-			turtle.AddComponent<Rigidbody2D>();
-			SpriteRenderer spriteRenderer = turtle.AddComponent<SpriteRenderer>();
-			spriteRenderer.sprite = obstacle_turtle;
-			spriteRenderer.sortingOrder = 1;
-			turtle.transform.position = new Vector2(spawnTileLocation * tileWidth, (GenerateElevation(spawnTileLocation)+1) * tileHeight) + mapOffset;
-			turtle.transform.parent = mapParent.transform;
-			turtle.name = "obstacle";
-			Obstacle obstacle = turtle.AddComponent<Obstacle>();
+			// create obstacle
+			int chosenObstacleIdx = (int)Mathf.Floor(DeterministicRandom(spawnTileLocation) * allObstacles.Length + 0.5f);
+			Sprite chosenObstacle = allObstacles[chosenObstacleIdx % allObstacles.Length];
+			SpawnObstacle(spawnTileLocation, chosenObstacle);
 		}
 		tilesTillNextObstacle -= distance;
+	}
+	void SpawnObstacle(int spawnTileLocation, Sprite sprite)
+	{
+		var obstacle = new GameObject();
+		BoxCollider2D boxCollider = obstacle.AddComponent<BoxCollider2D>();
+		boxCollider.size = new Vector2(tileWidth, tileHeight);
+		obstacle.AddComponent<Rigidbody2D>();
+		SpriteRenderer spriteRenderer = obstacle.AddComponent<SpriteRenderer>();
+		spriteRenderer.sprite = sprite;
+		spriteRenderer.sortingOrder = 1;
+		obstacle.transform.position = new Vector2(spawnTileLocation * tileWidth, (GenerateElevation(spawnTileLocation)+1) * tileHeight) + mapOffset;
+		obstacle.transform.parent = mapParent.transform;
+		obstacle.name = "obstacle";
+		Obstacle obstacleScript = obstacle.AddComponent<Obstacle>();
+
+		Obstacle.Type obstacleType = Obstacle.Type.Crawling;
+		if (sprite == obstacle_turtle)
+		{
+			obstacleType = Obstacle.Type.Crawling;
+		}
+		else if (sprite == obstacle_balloons)
+		{
+			obstacleType = Obstacle.Type.Floating; 
+		}
+		obstacleScript.type = obstacleType;
 	}
 	////////////////////////////////////////////////////////////////////////////////
 
@@ -235,7 +254,11 @@ public class MapGenerator : MonoBehaviour
 		track_incline2 = Resources.Load<Sprite>("Art/Tiles/track_incline2"); // near incline
 
 		// obstacles
-		obstacle_turtle = Resources.Load<Sprite>("Art/Obstacles/turtle");
+		obstacle_turtle   = Resources.Load<Sprite>("Art/Obstacles/turtle");
+		obstacle_balloons = Resources.Load<Sprite>("Art/Obstacles/balloons");
+		allObstacles = new Sprite[2];
+		allObstacles[0] = obstacle_turtle;
+		allObstacles[1] = obstacle_balloons;
 
 		// create some tiles procedurally
 		Update();
