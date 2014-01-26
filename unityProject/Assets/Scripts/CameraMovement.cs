@@ -9,7 +9,7 @@ public class CameraMovement : MonoBehaviour {
 	public Camera camera;
 	float zPos;
 	Transform cameraTransform;
-	const float minFOV = 20.0f;
+	const float minFOV = 15.0f;
 
 	// Use this for initialization
 	void Start () {
