@@ -237,6 +237,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   camera: {fileID: 1651639378}
+  shouldGetClose: 0
   movementMode: 0
 --- !u!212 &605573103
 SpriteRenderer:
@@ -406,7 +407,7 @@ GameObject:
   - 50: {fileID: 891902629}
   - 61: {fileID: 891902628}
   - 114: {fileID: 891902627}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Godzilla
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -459,6 +460,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   camera: {fileID: 1651639378}
+  shouldGetClose: 0
 --- !u!61 &891902628
 BoxCollider2D:
   m_ObjectHideFlags: 0

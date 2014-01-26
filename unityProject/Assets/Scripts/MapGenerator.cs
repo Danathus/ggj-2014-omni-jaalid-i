@@ -74,6 +74,7 @@ public class MapGenerator : MonoBehaviour
 		cube.transform.position = pos;
 		cube.transform.parent = mapParent.transform;
 		cube.name = "tile";
+		cube.layer = 10;
 	}
 
 	float DeterministicRandom(int input) // output in [0, 1]
@@ -235,6 +236,8 @@ public class MapGenerator : MonoBehaviour
 			obstacleType = Obstacle.Type.Floating; 
 		}
 		obstacleScript.type = obstacleType;
+
+		obstacle.layer = 9;
 	}
 	////////////////////////////////////////////////////////////////////////////////
 

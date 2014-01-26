@@ -38,14 +38,20 @@ public class TheManager : MonoBehaviour
 	{
 		timePassed += Time.deltaTime;
 
-		if (timePassed > 66)
+		if (timePassed > 70)
+		{
+		}
+		else if (timePassed > 66)
 		{
 			CameraMovement camMovement = camera.GetComponent<CameraMovement>();
 			if (camMovement.targetB == null)
 			{
-				camMovement.targetB = GameObject.Find("Godzilla");
+				var godzilla = GameObject.Find("Godzilla");
+				camMovement.targetB = godzilla;
 				var clip = Resources.Load<AudioClip>("Soundfx/GodzillaRoar");
 				AudioSource.PlayClipAtPoint(clip, GameObject.Find("Main Camera").transform.position); //  new Vector3(0, 0, 0)
+
+				godzilla.GetComponent<Godzilla>().shouldGetClose = true;
 			}
 
 			// tell Jeep to start moving
@@ -110,6 +116,10 @@ public class TheManager : MonoBehaviour
 			if (playerB) { DisablePlayer(playerB.GetComponent<PlayerMovement>()); }
 			if (playerC) { DisablePlayer(playerC.GetComponent<PlayerMovement>()); }
 			if (playerD) { DisablePlayer(playerD.GetComponent<PlayerMovement>()); }
+		}
+		else if (timePassed > 40)
+		{
+			GameObject.Find("Jeep").GetComponent<Jeep>().shouldGetClose = true;
 		}
 	}
 }
