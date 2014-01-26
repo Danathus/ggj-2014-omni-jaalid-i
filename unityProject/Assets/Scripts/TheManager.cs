@@ -77,6 +77,11 @@ public class TheManager : MonoBehaviour
 
 		if (timePassed > 70)
 		{
+			if (!godzillaMusic)
+			{
+				godzillaMusic = Resources.Load<AudioClip>("Music/TransformerGodzilla/Starseed_-_06_-_The_Forlorn");
+				godzillaMusicPlayer = PlayClipAt(godzillaMusic, camera.transform.position);
+			}
 		}
 		else if (timePassed > 68)
 		{
@@ -111,6 +116,11 @@ public class TheManager : MonoBehaviour
 		{
 			//
 			talkBubble = Say(jeep, "Don't look now,\nwe're being chased\nby Godzilla!", 3.0f);
+			if (racerJeepMusicPlayer)
+			{
+				racerJeepMusicPlayer.GetComponent<AudioSource>().Stop();
+				racerJeepMusicPlayer = null;
+			}
 		}
 		else if (timePassed > 61)
 		{
@@ -158,6 +168,6 @@ public class TheManager : MonoBehaviour
 	}
 
 	AudioClip racerMusic;
-	AudioClip racerJeepMusic;
-	GameObject racerMusicPlayer, racerJeepMusicPlayer;
+	AudioClip racerJeepMusic, godzillaMusic;
+	GameObject racerMusicPlayer, racerJeepMusicPlayer, godzillaMusicPlayer;
 }
