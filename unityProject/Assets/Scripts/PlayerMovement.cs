@@ -116,6 +116,9 @@ public class PlayerMovement : MonoBehaviour
 
 	Animator anim;
 	// Use this for initialization
+
+	AudioClip racerHit;
+	AudioClip racerJump1, racerJump2, racerJump3, racerJump4;
 	
 	void Start()
 	{
@@ -147,6 +150,12 @@ public class PlayerMovement : MonoBehaviour
 			sprRenderer.sortingOrder = 1;
 		}
 		anim = GetComponent<Animator> ();
+
+		racerHit = Resources.Load<AudioClip>("Soundfx/RacerHit");
+		racerJump1 = Resources.Load<AudioClip>("Soundfx/RacerJump");
+		racerJump2 = Resources.Load<AudioClip>("Soundfx/RacerJump2");
+		racerJump3 = Resources.Load<AudioClip>("Soundfx/RacerJump3");
+		racerJump4 = Resources.Load<AudioClip>("Soundfx/RacerJump4");
 	}
 
 	float Height()
@@ -243,6 +252,20 @@ public class PlayerMovement : MonoBehaviour
 			Rigidbody2D rbody = GetComponent<Rigidbody2D>();
 			rbody.velocity = new Vector2(rbody.velocity.x, jumpSpeed);
 			anim.SetTrigger ("Jump");
+
+			// choose random jump sound
+			//
+			int jumpSound = (int)UnityEngine.Random.Range(0.0f, 3.9f);
+			Vector3 camPos = GameObject.Find("Main Camera").transform.position;
+			switch (jumpSound)
+			{
+			case 0: AudioSource.PlayClipAtPoint(racerJump1, camPos); break;
+			case 1: AudioSource.PlayClipAtPoint(racerJump2, camPos); break;
+			case 2: AudioSource.PlayClipAtPoint(racerJump3, camPos); break;
+			case 3: AudioSource.PlayClipAtPoint(racerJump4, camPos); break;
+			}
+			//
+			;
 		}
 		onGround = false;
 	}
@@ -330,6 +353,7 @@ public class PlayerMovement : MonoBehaviour
 		if (!IsStunned())
 		{
 			mStunCountdown = kStunDuation;
+			AudioSource.PlayClipAtPoint(racerHit, GameObject.Find("Main Camera").transform.position); //  new Vector3(0, 0, 0)
 		}
 	}
 	bool IsStunned()
