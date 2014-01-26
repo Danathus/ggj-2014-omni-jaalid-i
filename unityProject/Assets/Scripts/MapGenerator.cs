@@ -92,6 +92,23 @@ public class MapGenerator : MonoBehaviour
 		return tileChoice;
 	}
 
+	Sprite ChooseAboveTile(Sprite elevationTile)
+	{
+		if (elevationTile == track_decline2)
+		{
+			return track_decline1;
+		}
+		if (elevationTile == track_incline2)
+		{
+			return track_incline1;
+		}
+		if (elevationTile == track_flat2)
+		{
+			return track_flat1;
+		}
+		return null;
+	}
+
 	CollisionShape ChooseCollisionShape(Sprite tile)
 	{
 		if (tile == track_decline2)
@@ -106,7 +123,7 @@ public class MapGenerator : MonoBehaviour
 		{
 			return CollisionShape.Square;
 		}
-		return CollisionShape.Square;
+		return CollisionShape.None;
 	}
 	
 	void Start()
@@ -147,6 +164,11 @@ public class MapGenerator : MonoBehaviour
 			{
 				Sprite tileChoice = ChooseElevationTile(y, prevElevation, currElevation, nextElevation);
 				CreateTile(new Vector2(x * tileWidth, y * tileHeight) + offset, tileChoice, ChooseCollisionShape(tileChoice));
+				if (y == currElevation-1)
+				{
+					Sprite aboveTile = ChooseAboveTile(tileChoice);
+					CreateTile(new Vector2(x * tileWidth, (y+1) * tileHeight) + offset, aboveTile, ChooseCollisionShape(aboveTile));
+				}
 			}
 		}
 	}
