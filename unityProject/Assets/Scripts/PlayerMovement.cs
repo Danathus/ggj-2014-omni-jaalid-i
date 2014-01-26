@@ -196,23 +196,15 @@ public class PlayerMovement : MonoBehaviour
 
 	void Run(Thought thought)
 	{
-
 		Rigidbody2D rbody = GetComponent<Rigidbody2D>();
 
 		float currVelX = thought.run;
-		if (Math.Abs(currVelX) > 0.1f)
+		if(runSprite && OnGround())
 		{
-			if(runSprite && OnGround())
-			{
-				SpriteRenderer sprRenderer = GetComponent<SpriteRenderer>();
-				sprRenderer.sprite = runSprite;  
-			}
-			rbody.velocity = new Vector2(currVelX * maxRunSpeed, rbody.velocity.y);
+			SpriteRenderer sprRenderer = GetComponent<SpriteRenderer>();
+			sprRenderer.sprite = runSprite;  
 		}
-		else
-		{
-			rbody.velocity = new Vector2(rbody.velocity.x * 0.1f, rbody.velocity.y);
-		}
+		rbody.velocity = new Vector2((currVelX + 1.0f) * maxRunSpeed, rbody.velocity.y);
 		myTransform.eulerAngles = new Vector3(0, 0, -rbody.velocity.x/3);
 	}
 	int talking = 0;

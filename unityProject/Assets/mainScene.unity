@@ -582,8 +582,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetA: {fileID: 58358461}
   targetB: {fileID: 2087023879}
-  targetC: {fileID: 0}
-  targetD: {fileID: 0}
+  targetC: {fileID: 1994765393}
+  targetD: {fileID: 650870950}
   camera: {fileID: 1651639378}
 --- !u!1 &1994765393
 GameObject:
