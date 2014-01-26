@@ -18,6 +18,11 @@ public class MapGenerator : MonoBehaviour
 	const float tileWidth  = 4;
 	const float tileHeight = 4;
 
+	int leadingDistanceInTiles = 10; //500;
+	int mostRecentXTileGenerated = 0;
+
+	public Camera camera;
+
 	enum CollisionShape
 	{
 		None,
@@ -157,6 +162,30 @@ public class MapGenerator : MonoBehaviour
 		}
 		return CollisionShape.None;
 	}
+
+	void GenerateTileSpan(int leftEdge, int rightEdge)
+	{
+		Vector2 offset = new Vector2(-75, -75);
+
+		int prevElevation, currElevation = 0, nextElevation = GenerateElevation(1);
+		for (int x = leftEdge; x < rightEdge; ++x)
+		{
+			prevElevation = currElevation;
+			currElevation = nextElevation;
+			nextElevation = GenerateElevation(x+1);
+			for (int y = 0; y < currElevation; ++y)
+			{
+				Sprite tileChoice = ChooseElevationTile(y, prevElevation, currElevation, nextElevation);
+				CreateTile(new Vector2(x * tileWidth, y * tileHeight) + offset, tileChoice, ChooseCollisionShape(tileChoice));
+				if (y == currElevation-1)
+				{
+					Sprite aboveTile = ChooseAboveTile(tileChoice);
+					CreateTile(new Vector2(x * tileWidth, (y+1) * tileHeight) + offset, aboveTile, ChooseCollisionShape(aboveTile));
+				}
+			}
+		}
+		mostRecentXTileGenerated = rightEdge;
+	}
 	
 	void Start()
 	{
@@ -182,31 +211,17 @@ public class MapGenerator : MonoBehaviour
 		tiles[5] = track_incline1;
 		tiles[6] = track_incline2;
 
-		Vector2 offset = new Vector2(-75, -75);
-
 		// create some tiles procedurally
-		//int tileIdx = 0;
-		int prevElevation, currElevation = 0, nextElevation = GenerateElevation(1);
-		for (int x = 0; x < 300; ++x)
-		{
-			prevElevation = currElevation;
-			currElevation = nextElevation;
-			nextElevation = GenerateElevation(x+1);
-			for (int y = 0; y < currElevation; ++y)
-			{
-				Sprite tileChoice = ChooseElevationTile(y, prevElevation, currElevation, nextElevation);
-				CreateTile(new Vector2(x * tileWidth, y * tileHeight) + offset, tileChoice, ChooseCollisionShape(tileChoice));
-				if (y == currElevation-1)
-				{
-					Sprite aboveTile = ChooseAboveTile(tileChoice);
-					CreateTile(new Vector2(x * tileWidth, (y+1) * tileHeight) + offset, aboveTile, ChooseCollisionShape(aboveTile));
-				}
-			}
-		}
+		Update();
+		//GenerateTileSpan(mostRecentXTileGenerated+1, mostRecentXTileGenerated + leadingDistanceInTiles);
 	}
 
 	void Update()
 	{
 		// per frame update
+		if (camera && camera.transform.position.x + leadingDistanceInTiles*tileWidth > mostRecentXTileGenerated*tileWidth)
+		{
+			GenerateTileSpan(mostRecentXTileGenerated+1, mostRecentXTileGenerated + leadingDistanceInTiles);
+		}
 	}
 }
