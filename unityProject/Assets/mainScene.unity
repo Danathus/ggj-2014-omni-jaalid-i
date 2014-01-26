@@ -233,7 +233,7 @@ Animator:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 956109648}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: d56f720d6a6bc6f4f9b531d6faee2c2b, type: 2}
   m_CullingMode: 0
@@ -315,7 +315,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brainType: 1
-  textMeshPrefab: {fileID: 0}
 --- !u!4 &956109655
 Transform:
   m_ObjectHideFlags: 0
@@ -354,7 +353,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0e66ea13ddbe804580d70d8480e22a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 0}
+  camera: {fileID: 1651639378}
 --- !u!4 &981577040
 Transform:
   m_ObjectHideFlags: 0
@@ -394,7 +393,7 @@ Animator:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1105710310}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: d56f720d6a6bc6f4f9b531d6faee2c2b, type: 2}
   m_CullingMode: 0
@@ -477,7 +476,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brainType: 0
-  textMeshPrefab: {fileID: 0}
 --- !u!4 &1105710317
 Transform:
   m_ObjectHideFlags: 0
@@ -579,7 +577,7 @@ Animator:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1635560389}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: d56f720d6a6bc6f4f9b531d6faee2c2b, type: 2}
   m_CullingMode: 0
@@ -661,8 +659,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469c831cfc979a7428d763117d3cc179, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brainType: 2
-  textMeshPrefab: {fileID: 0}
+  brainType: 4
 --- !u!4 &1635560396
 Transform:
   m_ObjectHideFlags: 0
@@ -770,7 +767,7 @@ MonoBehaviour:
   targetB: {fileID: 956109648}
   targetC: {fileID: 1635560389}
   targetD: {fileID: 1790336733}
-  camera: {fileID: 0}
+  camera: {fileID: 1651639378}
 --- !u!1 &1790336733
 GameObject:
   m_ObjectHideFlags: 0
@@ -831,8 +828,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469c831cfc979a7428d763117d3cc179, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brainType: 3
-  textMeshPrefab: {fileID: 0}
+  brainType: 4
 --- !u!50 &1790336737
 Rigidbody2D:
   m_ObjectHideFlags: 0
