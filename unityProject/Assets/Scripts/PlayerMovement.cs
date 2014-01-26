@@ -102,6 +102,7 @@ public class PlayerMovement : MonoBehaviour
 	{
 		brain = CreateBrain();
 		myTransform = transform;
+		myTransform.position = myTransform.position + new Vector3(0, 100, 0);
 		startScale = new Vector3(myTransform.localScale.x, myTransform.localScale.y, myTransform.localScale.z);
 		//Resources.Load<Sprite> ("/Art/Basketballer/basketballer_blue_land1.png");
 

@@ -65,8 +65,14 @@ public class MapGenerator : MonoBehaviour
 
 	float DeterministicRandom(int input) // output in [0, 1]
 	{
+		/*
 		UnityEngine.Random.seed = input;
 		float randomValue = UnityEngine.Random.value;
+		/*/
+		System.Random random = new System.Random((int)(input * 100 ^ 0xdeadbeef));
+		float randomValue = (float)random.Next(0, 1000) / 1000.0f;
+		//*/
+		//Debug.Log ("" + input + " -> " + randomValue);
 		return randomValue;
 	}
 
@@ -82,8 +88,8 @@ public class MapGenerator : MonoBehaviour
 		int laterDecisionPoint = earlierDecisionPoint + decisionFrequency;
 
 		// find the heights at these decision points
-		int midLevel = 10;
-		float tileAmplitude = 3.0f;
+		int midLevel = 20;
+		float tileAmplitude = 10.0f;
 		int earlierElevation = midLevel + (int)(DeterministicRandom(earlierDecisionPoint)*tileAmplitude);
 		int laterElevation = midLevel + (int)(DeterministicRandom(laterDecisionPoint)*tileAmplitude);
 
@@ -181,7 +187,7 @@ public class MapGenerator : MonoBehaviour
 		// create some tiles procedurally
 		//int tileIdx = 0;
 		int prevElevation, currElevation = 0, nextElevation = GenerateElevation(1);
-		for (int x = 0; x < 1000; ++x)
+		for (int x = 0; x < 300; ++x)
 		{
 			prevElevation = currElevation;
 			currElevation = nextElevation;
