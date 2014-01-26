@@ -18,9 +18,12 @@ public class MapGenerator : MonoBehaviour
 	const float tileWidth  = 4;
 	const float tileHeight = 4;
 
-	int leadingDistanceInTiles = 10; //500;
+	int leadingDistanceInTiles = 20; //500;
 	int mostRecentXTileGenerated = 0;
 
+	Vector2 mapOffset = new Vector2(-75, -75);
+	//Vector2 mapOffset = new Vector2(0, 0);
+	
 	public Camera camera;
 
 	enum CollisionShape
@@ -165,9 +168,7 @@ public class MapGenerator : MonoBehaviour
 
 	void GenerateTileSpan(int leftEdge, int rightEdge)
 	{
-		Vector2 offset = new Vector2(-75, -75);
-
-		int prevElevation, currElevation = 0, nextElevation = GenerateElevation(1);
+		int prevElevation, currElevation = GenerateElevation(leftEdge), nextElevation = GenerateElevation(leftEdge+1);
 		for (int x = leftEdge; x < rightEdge; ++x)
 		{
 			prevElevation = currElevation;
@@ -176,17 +177,17 @@ public class MapGenerator : MonoBehaviour
 			for (int y = 0; y < currElevation; ++y)
 			{
 				Sprite tileChoice = ChooseElevationTile(y, prevElevation, currElevation, nextElevation);
-				CreateTile(new Vector2(x * tileWidth, y * tileHeight) + offset, tileChoice, ChooseCollisionShape(tileChoice));
+				CreateTile(new Vector2(x * tileWidth, y * tileHeight) + mapOffset, tileChoice, ChooseCollisionShape(tileChoice));
 				if (y == currElevation-1)
 				{
 					Sprite aboveTile = ChooseAboveTile(tileChoice);
-					CreateTile(new Vector2(x * tileWidth, (y+1) * tileHeight) + offset, aboveTile, ChooseCollisionShape(aboveTile));
+					CreateTile(new Vector2(x * tileWidth, (y+1) * tileHeight) + mapOffset, aboveTile, ChooseCollisionShape(aboveTile));
 				}
 			}
 		}
 		mostRecentXTileGenerated = rightEdge;
 	}
-	
+
 	void Start()
 	{
 		// create parent for map
@@ -219,9 +220,11 @@ public class MapGenerator : MonoBehaviour
 	void Update()
 	{
 		// per frame update
-		if (camera && camera.transform.position.x + leadingDistanceInTiles*tileWidth > mostRecentXTileGenerated*tileWidth)
+		float farEdge = -mapOffset.x + camera.transform.position.x + leadingDistanceInTiles * tileWidth * camera.orthographicSize / 20.0f;
+		if (camera && farEdge > mostRecentXTileGenerated*tileWidth)
 		{
-			GenerateTileSpan(mostRecentXTileGenerated+1, mostRecentXTileGenerated + leadingDistanceInTiles);
+			//GenerateTileSpan(mostRecentXTileGenerated+1, mostRecentXTileGenerated + leadingDistanceInTiles);
+			GenerateTileSpan(mostRecentXTileGenerated, (int)farEdge/(int)tileWidth);
 		}
 	}
 }
