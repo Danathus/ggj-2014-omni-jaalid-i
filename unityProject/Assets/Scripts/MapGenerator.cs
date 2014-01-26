@@ -28,9 +28,10 @@ public class MapGenerator : MonoBehaviour
 		const float tileHeight = 1;
 
 		// create some tiles procedurally
-		for (int x = 0; x < 10; ++x)
+		for (int x = 0; x < 100; ++x)
 		{
-			for (int y = 0; y < x; ++y)
+			int elevation = (int)(10.0f*Mathf.Sin(x / 100.0f * 2.0f * (float)Math.PI)) + 10;
+			for (int y = 0; y < elevation; ++y)
 			{
 				CreateTile(new Vector2(x * tileWidth, y * tileHeight));
 			}
