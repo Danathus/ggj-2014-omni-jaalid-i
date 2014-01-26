@@ -159,7 +159,7 @@ public class PlayerMovement : MonoBehaviour
             Debug.DrawRay(contact.point, contact.normal, Color.green);
         }
 		//*/
-		if (collision.gameObject.name == "Big Flat Ground" || collision.gameObject.name == "tile")
+		if (collision.gameObject.name == "tile")
 		{
 			onGround = true;
 		}
